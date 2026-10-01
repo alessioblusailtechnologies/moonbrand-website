@@ -1,0 +1,92 @@
+@let current = card();
+
+@if (analyzing()) {
+  <div class="panel big">
+    <p class="strong-sm">Sto leggendo i tuoi testi</p>
+    <mb-step-list [steps]="steps()" />
+  </div>
+} @else if (mode() === 'paste') {
+  <div class="panel big">
+    <p class="label">Incolla i tuoi testi</p>
+    <textarea class="sunken" rows="8" placeholder="Incolla qui i post, separati da una riga vuota." aria-label="Testi da analizzare"
+      [value]="texts()" (input)="texts.set($any($event.target).value)"></textarea>
+    <p class="caption">Più testi leggo, meno correzioni farai dopo. Con tre ci siamo, con dieci si sente la differenza.</p>
+    <div class="actions">
+      <button class="btn btn-ghost btn-sm" type="button" (click)="mode.set('sources')">Annulla</button>
+      <button class="btn btn-primary btn-sm" type="button" [attr.aria-disabled]="texts().trim().length < 40" (click)="submitTexts()">
+        Analizza
+      </button>
+    </div>
+  </div>
+} @else if (mode() === 'recording') {
+  <div class="panel big">
+    <p class="label">Registrazione</p>
+    <div class="row">
+      <span class="dot rec"></span>
+      <span class="display">{{ clock() }}</span>
+    </div>
+    <p class="caption">
+      Registrazione simulata. Racconta com’è andata la settimana come lo diresti a un collega: trascrivo e ne ricavo il ritmo.
+    </p>
+    <div class="actions">
+      <button class="btn btn-ghost btn-sm" type="button" (click)="cancelRecording()">Annulla</button>
+      <button class="btn btn-primary btn-sm" type="button" [disabled]="seconds() < 3" (click)="stopRecording()">Ferma e analizza</button>
+    </div>
+  </div>
+} @else if (current && !adding()) {
+  <div class="panel big">
+    <div class="row">
+      <span class="badge mint">Scheda voce v{{ current.version }}</span>
+      <span class="caption grow ellipsis">da {{ current.sourceLabel }}</span>
+      <button class="link-btn" type="button" (click)="editing.set(!editing())">{{ editing() ? 'Fatto' : 'Correggi' }}</button>
+    </div>
+    @for (row of rows; track row.key) {
+      <div class="voice-row">
+        <p class="label">{{ row.label }}</p>
+        @if (editing()) {
+          <textarea class="sunken" rows="2" [attr.aria-label]="row.label" [value]="current[row.key]"
+            (input)="editRow(row.key, $any($event.target).value)"></textarea>
+        } @else {
+          <p class="body ink">{{ current[row.key] }}</p>
+        }
+      </div>
+    }
+    <button class="btn btn-ghost btn-block" type="button" (click)="addMore()">Aggiungi altri testi</button>
+  </div>
+
+  @if (previous().length > 0) {
+    <div class="panel">
+      <p class="label">Versioni precedenti</p>
+      @for (older of previous(); track older.version + older.createdAt) {
+        <div class="history-row">
+          <div class="grow">
+            <p class="strong-sm">v{{ older.version }} · {{ formatDate(older.createdAt) }}</p>
+            <p class="caption">da {{ older.sourceLabel }}</p>
+          </div>
+          <button class="btn btn-ghost btn-sm" type="button" (click)="restore(older)">Ripristina</button>
+        </div>
+      }
+    </div>
+  }
+} @else {
+  @for (source of sources(); track source.key) {
+    <button class="option-card" type="button" [disabled]="source.disabled" (click)="source.run()">
+      <span class="source-icon" [class.off]="source.disabled"><mb-icon [name]="source.icon" /></span>
+      <span class="grow">
+        <span class="strong" [class.muted]="source.disabled">{{ source.title }}</span>
+        <span class="caption">{{ source.meta }}</span>
+      </span>
+      <mb-icon name="chevron-right" class="chevron" />
+    </button>
+  }
+  <p class="caption">
+    @if (current) {
+      La nuova scheda prende il posto di quella in uso; le precedenti restano nello storico.
+    } @else {
+      Più testi reali leggo, meno correzioni farai dopo. Con tre testi ci siamo, con dieci si sente la differenza.
+    }
+  </p>
+  @if (current) {
+    <button class="btn btn-ghost btn-block" type="button" (click)="adding.set(false)">Torna alla scheda in uso</button>
+  }
+}

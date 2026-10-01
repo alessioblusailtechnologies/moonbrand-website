@@ -1,0 +1,39 @@
+---
+import { posts, postColumns, channelLabel } from '../data/home';
+import PostPreview from './PostPreview.astro';
+
+const columns = postColumns(posts);
+---
+
+<section class="examples" data-screen-label="Esempi">
+  <div class="inner">
+    <p class="intro">Pensato per chi pubblica ogni settimana e non vuole suonare come tutti gli altri</p>
+    <div class="grid">
+      {columns.map((col) => (
+        <div class="col">
+          {col.map((p) => (
+            <figure>
+              <PostPreview post={p} />
+              <figcaption>
+                <span class="channel mono">{channelLabel[p.channel]}</span>
+                <span class="tone">{p.tone}</span>
+              </figcaption>
+            </figure>
+          ))}
+        </div>
+      ))}
+    </div>
+  </div>
+</section>
+
+<style>
+  .examples { padding: 40px 24px 120px; }
+  .inner { max-width: 1100px; margin: 0 auto; display: flex; flex-direction: column; align-items: center; gap: 36px; }
+  .intro { margin: 0; font-size: 17px; font-weight: 500; text-align: center; max-width: 520px; text-wrap: balance; }
+  .grid { width: 100%; display: flex; flex-wrap: wrap; gap: 20px; align-items: flex-start; }
+  .col { flex: 1 1 260px; min-width: 0; display: flex; flex-direction: column; gap: 28px; }
+  figure { margin: 0; display: flex; flex-direction: column; gap: 10px; }
+  figcaption { display: flex; justify-content: space-between; gap: 10px; padding: 0 4px; font-size: 12px; }
+  .channel { font-size: 10.5px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.04em; }
+  .tone { color: var(--faint); text-align: right; }
+</style>

@@ -1,0 +1,122 @@
+@if (brand()) {
+  <section #list class="ideas">
+    <div class="toolbar">
+      <div class="segmented tabs" role="tablist" aria-label="Quali idee mostrare">
+        <button type="button" role="tab" [attr.aria-selected]="view() === 'new'" [class.selected]="view() === 'new'" (click)="view.set('new')">
+          Proposte · {{ counts().new }}
+        </button>
+        <button type="button" role="tab" [attr.aria-selected]="view() === 'saved'" [class.selected]="view() === 'saved'" (click)="view.set('saved')">
+          Salvate · {{ counts().saved }}
+        </button>
+      </div>
+      @if (themes().length > 0) {
+        <div class="filters-wrap">
+          @if (canScrollLeft()) {
+            <button class="scroll left" type="button" aria-label="Temi precedenti" (click)="scrollThemes(-1)">
+              <mb-icon name="chevron-left" [size]="16" />
+            </button>
+          }
+          <div #filters class="filters" role="group" aria-label="Filtra per tema" [class.fade-left]="canScrollLeft()"
+            [class.fade-right]="canScrollRight()" (scroll)="updateScroll()">
+            <button class="chip" type="button" [class.selected]="!themeId()" (click)="themeId.set(null)">Tutti i temi</button>
+            @for (theme of themes(); track theme.id) {
+              <button class="chip" type="button" [class.selected]="themeId() === theme.id" [attr.title]="theme.name" (click)="themeId.set(theme.id)">
+                {{ theme.name }}
+              </button>
+            }
+          </div>
+          @if (canScrollRight()) {
+            <button class="scroll right" type="button" aria-label="Temi successivi" (click)="scrollThemes(1)">
+              <mb-icon name="chevron-right" [size]="16" />
+            </button>
+          }
+        </div>
+      }
+    </div>
+
+    @if (preparing()) {
+      <div class="panel preparing">
+        <p class="strong-sm">{{ ideas().length > 0 ? 'Preparo altre idee' : 'Preparo le prime idee dal tuo brand' }}</p>
+        <mb-step-list [steps]="steps()" waiting="Rileggo il brand" />
+      </div>
+    }
+
+    @if (lastDecision(); as last) {
+      <p class="undo caption" role="status">
+        {{ last.idea.status === 'saved' ? 'Idea salvata.' : last.idea.status === 'discarded' ? 'Idea scartata.' : 'Idea rimessa tra le proposte.' }}
+        <button class="link-btn" type="button" (click)="undo()">Annulla</button>
+      </p>
+    }
+
+    @if (loading()) {
+      <div class="empty"><span class="spinner"></span></div>
+    } @else if (visible().length === 0) {
+      @if (!preparing()) {
+        <div class="empty">
+          <p class="strong-sm">
+            @if (view() === 'new') {
+              {{ themeId() ? 'Nessuna proposta su questo tema' : 'Hai visto tutte le proposte' }}
+            } @else {
+              {{ themeId() ? 'Nessuna idea salvata su questo tema' : 'Nessuna idea salvata' }}
+            }
+          </p>
+          <p class="caption">
+            {{ view() === 'new' ? 'Chiedine altre: tengo conto di quelle che hai salvato e scartato.' : 'Salva le proposte che ti convincono: le ritrovi qui.' }}
+          </p>
+        </div>
+      }
+    } @else {
+      <div class="grid">
+        @for (column of columns(); track $index) {
+          <div class="column">
+            @for (idea of column; track idea.id) {
+              <article class="panel idea">
+                <div class="meta">
+                  <span class="badge">{{ signalLabel(idea) }}</span>
+                  @if (idea.signal.sourceUrl; as sourceUrl) {
+                    <a class="source caption" [href]="sourceUrl" target="_blank" rel="noopener noreferrer">Fonte</a>
+                  }
+                  @if (theme(idea); as ideaTheme) {
+                    <span class="theme caption"><span class="dot" [style.background]="ideaTheme.color"></span>{{ ideaTheme.name }}</span>
+                  }
+                </div>
+                <div class="stack">
+                  <p class="label">{{ idea.angleLabel }}</p>
+                  <h2 class="heading">{{ idea.title }}</h2>
+                </div>
+                <p class="body">{{ idea.angle }}</p>
+                <div class="why">
+                  <p class="label">Perché adesso</p>
+                  <p class="body ink">{{ idea.rationale }}</p>
+                </div>
+                <div class="actions">
+                  @if (idea.status === 'new') {
+                    <button class="btn btn-secondary btn-sm" type="button" (click)="decide(idea, 'discarded')">Scarta</button>
+                    <button class="btn btn-secondary btn-sm" type="button" (click)="decide(idea, 'saved')">Salva</button>
+                  } @else {
+                    <button class="link-btn muted" type="button" (click)="decide(idea, 'new')">Rimetti tra le proposte</button>
+                    <button class="btn btn-secondary btn-sm" type="button" [disabled]="planning() === idea.id" (click)="addToPlan(idea)">
+                      {{ planning() === idea.id ? 'Aggiungo…' : 'Aggiungi al piano' }}
+                    </button>
+                  }
+                  <button class="btn btn-primary btn-sm" type="button" (click)="creatingFrom.set(idea)">Crea contenuto</button>
+                </div>
+              </article>
+            }
+          </div>
+        }
+      </div>
+    }
+  </section>
+}
+@if (creatingFrom(); as idea) {
+  <mb-create-content-dialog [idea]="idea" [channels]="channels()" [busy]="creating()" (closed)="creatingFrom.set(null)"
+    (created)="createContent($event)" />
+}
+<router-outlet />
+
+<ng-template #headerActions>
+  <button class="btn btn-primary btn-sm" type="button" [disabled]="preparing()" (click)="more()">
+    {{ preparing() ? 'Preparo le idee…' : 'Proponi altre idee' }}
+  </button>
+</ng-template>

@@ -1,0 +1,89 @@
+<div class="backdrop" (click)="saving() || closed.emit()"></div>
+<div class="dialog" role="dialog" aria-modal="true" aria-labelledby="session-title">
+  <header class="dialog-head">
+    <div class="stack-sm">
+      <h2 id="session-title" class="dialog-title">Pianifica le prossime settimane</h2>
+      <p class="caption">Giorni e orari migliori per canale, temi secondo il loro peso e le idee salvate dello stesso tema.</p>
+    </div>
+    <button class="icon-btn" type="button" aria-label="Chiudi" [disabled]="saving()" (click)="closed.emit()">
+      <mb-icon name="x" />
+    </button>
+  </header>
+
+  <div class="settings">
+    <div class="setting">
+      <p class="label">Da quando</p>
+      <div class="segmented">
+        <button type="button" [class.selected]="start() === 'tomorrow'" (click)="start.set('tomorrow')">Da domani</button>
+        <button type="button" [class.selected]="start() === 'nextWeek'" (click)="start.set('nextWeek')">Dalla prossima settimana</button>
+      </div>
+    </div>
+    <div class="setting">
+      <p class="label">Per quanto</p>
+      <div class="segmented">
+        @for (option of weekOptions; track option) {
+          <button type="button" [class.selected]="weeks() === option" (click)="weeks.set(option)">{{ option }} {{ option === 1 ? 'settimana' : 'settimane' }}</button>
+        }
+      </div>
+    </div>
+    <div class="setting">
+      <p class="label">Uscite a settimana</p>
+      <div class="stepper">
+        <button class="icon-btn" type="button" aria-label="Una in meno" [disabled]="perWeek() <= 1" (click)="stepPerWeek(-1)"><mb-icon name="minus" [size]="16" /></button>
+        <span class="strong">{{ perWeek() }}</span>
+        <button class="icon-btn" type="button" aria-label="Una in più" [disabled]="perWeek() >= 7" (click)="stepPerWeek(1)"><mb-icon name="plus" [size]="16" /></button>
+      </div>
+    </div>
+    <div class="setting wide">
+      <p class="label">Canali</p>
+      <div class="chips">
+        @for (channel of plan().channels; track channel) {
+          <button class="chip" type="button" [class.selected]="channels().includes(channel)" [attr.aria-pressed]="channels().includes(channel)"
+            (click)="toggle(channel)">
+            {{ name(channel) }}
+          </button>
+        }
+      </div>
+    </div>
+  </div>
+
+  <div class="proposal" [class.loading]="loading()">
+    @for (draft of drafts(); track draft.date + draft.time; let i = $index) {
+      <div class="draft">
+        <span class="theme-bar" [style.background]="themeColor(draft.themeId)"></span>
+        <div class="draft-when">
+          <span class="strong-sm">{{ day(draft.date) }}</span>
+          <span class="caption">{{ draft.time }}</span>
+        </div>
+        <span class="marks">
+          @for (channel of draft.channels; track channel) {
+            <mb-channel-mark [channel]="channel" [active]="true" [size]="14" />
+          }
+        </span>
+        <div class="draft-texts">
+          <span class="draft-title" [class.muted]="!draft.ideaId">{{ ideaTitle(draft.ideaId) ?? 'Da riempire' }}</span>
+          @if (themeName(draft.themeId); as theme) {
+            <span class="caption">{{ theme }}</span>
+          }
+        </div>
+        <button class="link-btn" type="button" (click)="changeIdea(i)">Cambia idea</button>
+        <button class="icon-btn" type="button" aria-label="Togli questa uscita" (click)="removeDraft(i)"><mb-icon name="x" [size]="16" /></button>
+      </div>
+    } @empty {
+      <p class="caption none">
+        {{ loading() ? 'Preparo la proposta…' : channels().length === 0 ? 'Scegli almeno un canale.' : 'In questo periodo i giorni del ritmo hanno già un’uscita.' }}
+      </p>
+    }
+  </div>
+
+  <footer class="dialog-foot">
+    @if (balance(); as hint) {
+      <p class="caption hint">{{ hint }}</p>
+    }
+    <span class="grow"></span>
+    <button class="btn btn-secondary" type="button" [disabled]="saving()" (click)="closed.emit()">Annulla</button>
+    <button class="btn btn-primary" type="button" [disabled]="saving() || loading() || drafts().length === 0" (click)="confirm()">
+      {{ saving() ? 'Aggiungo…' : 'Aggiungi ' + drafts().length + (drafts().length === 1 ? ' uscita' : ' uscite') }}
+    </button>
+  </footer>
+</div>

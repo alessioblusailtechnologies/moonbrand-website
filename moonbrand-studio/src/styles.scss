@@ -1,0 +1,575 @@
+:root {
+  // La palette dello studio: per provarne un'altra basta cambiare questo blocco.
+  --ink: #000000;
+  --primary: #0b1324;
+  // Le varianti che seguono sono ricavate dal blu notte e dall'arancio.
+  --primary-soft: #26324a;
+  --accent: #f29a2e;
+  --accent-hover: #f5aa4c;
+  --accent-strong: #c96f10;
+  --accent-soft: #fdd08a;
+  // Il fondo delle icone arancio sul bianco (gli spunti dell'assistente).
+  --accent-tint: #fdf1e2;
+  // I grigi sono caldi, come il fondo della pagina.
+  --grey-100: #f1efea;
+  --mint-400: #6dd47e;
+  --success: #2f9e6a;
+  // Fuori dalla palette: gli errori restano rossi, distinti dall'accento.
+  --danger: #d64528;
+  --grey-300: #d4d2cc;
+  --grey-500: #98a2b3;
+  --white: #ffffff;
+
+  // La pagina è un pannello avorio dentro la cornice blu notte della sidebar.
+  --surface-app: #fafaf8;
+  --surface-card: var(--white);
+  --surface-sidebar: var(--primary);
+  --surface-sidebar-active: rgba(255, 255, 255, 0.09);
+  --sidebar-text: #c4ccda;
+  --sidebar-muted: #7e8aa3;
+  --sidebar-hover: rgba(255, 255, 255, 0.06);
+  // Le finestre (onboarding, modifica di una sezione) restano grigie: dentro ci sono pannelli bianchi.
+  --surface-dialog: var(--grey-100);
+  --surface-sunken: var(--grey-100);
+  --text-title: var(--primary);
+  --text-body: #667085;
+  --border-subtle: #ededea;
+  // Il bordo dei pannelli bianchi sul fondo avorio.
+  --border-card: #e9e8e4;
+  --border-field: var(--grey-300);
+  --border-strong: var(--primary);
+
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 20px;
+  --radius-card: 24px;
+
+  // Il velo dietro le finestre modali: sul fondo bianco deve scurire davvero la pagina.
+  --scrim: rgba(0, 0, 0, 0.55);
+
+  --shadow-menu: 0 18px 48px rgba(0, 0, 0, 0.18);
+  --shadow-card: 0 1px 2px rgba(11, 19, 36, 0.04), 0 8px 24px -8px rgba(11, 19, 36, 0.08);
+  --shadow-toast: 0 10px 24px rgba(0, 0, 0, 0.4);
+  --ease: cubic-bezier(0.2, 0, 0.2, 1);
+  --topbar-height: 56px;
+  --font-mono: 'Geist Mono', ui-monospace, monospace;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  min-height: 100%;
+  background: var(--surface-app);
+  color: var(--text-title);
+  font-family: 'Geist', system-ui, sans-serif;
+  font-size: 14px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+button,
+input,
+textarea {
+  font: inherit;
+  color: inherit;
+}
+
+// I link sul bianco restano blu: l'accento non si legge.
+a {
+  color: var(--primary-soft);
+}
+
+h1,
+h2,
+h3,
+p {
+  margin: 0;
+}
+
+.display {
+  font-size: 32px;
+  font-weight: 600;
+  line-height: 1.18;
+  letter-spacing: -0.025em;
+}
+
+.title {
+  font-size: 26px;
+  font-weight: 600;
+  line-height: 1.18;
+  letter-spacing: -0.025em;
+}
+
+.heading {
+  font-size: 19px;
+  font-weight: 600;
+  line-height: 1.22;
+  letter-spacing: -0.025em;
+}
+
+.strong {
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.35;
+}
+
+.strong-sm {
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.35;
+}
+
+.body {
+  font-size: 14px;
+  color: var(--text-body);
+  line-height: 1.6;
+}
+
+.caption {
+  font-size: 12px;
+  color: var(--text-body);
+  line-height: 1.55;
+}
+
+.label {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-body);
+}
+
+.ink {
+  color: var(--text-title);
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 40px;
+  padding: 0 18px;
+  border: 1.5px solid transparent;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  white-space: nowrap;
+  transition:
+    background-color 120ms var(--ease),
+    transform 120ms var(--ease),
+    opacity 120ms var(--ease);
+
+  &:active:not(:disabled) {
+    transform: scale(0.97);
+  }
+
+  &:disabled {
+    cursor: not-allowed;
+    opacity: 0.45;
+  }
+
+  &.busy {
+    cursor: progress;
+    opacity: 0.8;
+  }
+}
+
+.btn-primary {
+  background: var(--primary);
+  color: var(--white);
+
+  &:hover:not(:disabled) {
+    background: var(--ink);
+  }
+}
+
+.btn-accent {
+  background: var(--accent);
+  color: var(--ink);
+
+  &:hover:not(:disabled) {
+    background: var(--accent-hover);
+  }
+}
+
+.btn-secondary {
+  background: var(--white);
+  border-color: var(--primary);
+  color: var(--primary);
+
+  &:hover:not(:disabled) {
+    background: var(--grey-100);
+  }
+}
+
+.btn-ghost {
+  background: transparent;
+  color: var(--primary);
+
+  &:hover:not(:disabled) {
+    background: rgba(20, 33, 61, 0.06);
+  }
+}
+
+.btn-lg {
+  min-height: 52px;
+  padding: 0 26px;
+  font-size: 15px;
+}
+
+.btn-sm {
+  min-height: 32px;
+  padding: 0 14px;
+  font-size: 12px;
+}
+
+.btn-block {
+  width: 100%;
+}
+
+.icon-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  border: 1.5px solid transparent;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--primary);
+  cursor: pointer;
+
+  &:hover:not(:disabled) {
+    background: rgba(20, 33, 61, 0.06);
+  }
+
+  &:disabled {
+    opacity: 0.35;
+    cursor: not-allowed;
+  }
+
+  &.outline {
+    border-color: var(--grey-300);
+  }
+
+  &.solid {
+    background: var(--primary);
+    color: var(--white);
+  }
+}
+
+.link-btn {
+  padding: 4px 0;
+  border: 0;
+  background: none;
+  color: var(--primary-soft);
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+
+  &.muted {
+    color: var(--text-body);
+  }
+
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
+.panel {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 20px;
+  border: 1px solid var(--border-card);
+  border-radius: var(--radius-xl);
+  background: var(--surface-card);
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 14px 16px;
+  border: 1.5px solid transparent;
+  border-radius: var(--radius-lg);
+  background: var(--surface-card);
+  transition: border-color 120ms var(--ease);
+
+  &:focus-within {
+    border-color: var(--border-strong);
+  }
+
+  label {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-body);
+  }
+
+  input,
+  textarea {
+    width: 100%;
+    padding: 0;
+    border: 0;
+    outline: 0;
+    background: transparent;
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--text-title);
+    resize: vertical;
+
+    &::placeholder {
+      color: var(--grey-300);
+      font-weight: 400;
+    }
+  }
+
+  textarea {
+    min-height: 72px;
+    line-height: 1.5;
+  }
+
+  .field-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .hint {
+    font-size: 12px;
+    color: var(--text-body);
+  }
+}
+
+.sunken {
+  width: 100%;
+  min-height: 40px;
+  padding: 10px 14px;
+  border: 1.5px solid transparent;
+  border-radius: var(--radius-md);
+  outline: 0;
+  background: var(--surface-sunken);
+  color: var(--text-title);
+  font-size: 14px;
+  resize: vertical;
+
+  &:focus {
+    border-color: var(--border-strong);
+    background: var(--white);
+  }
+
+  &::placeholder {
+    color: var(--grey-500);
+  }
+}
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.chip {
+  min-height: 36px;
+  padding: 0 14px;
+  border: 1.5px solid var(--grey-300);
+  border-radius: 999px;
+  background: var(--white);
+  color: var(--text-title);
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition:
+    background-color 120ms var(--ease),
+    border-color 120ms var(--ease);
+
+  &:hover {
+    border-color: var(--primary);
+  }
+
+  &.selected {
+    border-color: var(--primary);
+    background: var(--primary);
+    color: var(--white);
+  }
+}
+
+.segmented {
+  display: flex;
+  padding: 3px;
+  border-radius: 999px;
+  background: var(--surface-sunken);
+
+  button {
+    flex: 1;
+    min-height: 32px;
+    border: 0;
+    border-radius: 999px;
+    background: transparent;
+    color: var(--text-body);
+    font-size: 12px;
+    font-weight: 500;
+    cursor: pointer;
+
+    &.selected {
+      background: var(--white);
+      color: var(--text-title);
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+    }
+  }
+}
+
+.option-card {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  width: 100%;
+  padding: 16px;
+  border: 1.5px solid transparent;
+  border-radius: var(--radius-xl);
+  background: var(--surface-card);
+  text-align: left;
+  cursor: pointer;
+  transition:
+    border-color 120ms var(--ease),
+    transform 120ms var(--ease);
+
+  &:hover:not(:disabled) {
+    border-color: var(--grey-300);
+  }
+
+  &.selected {
+    border-color: var(--border-strong);
+  }
+
+  &:disabled {
+    cursor: not-allowed;
+  }
+
+  .grow {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+  }
+}
+
+.radio-mark {
+  flex: none;
+  width: 20px;
+  height: 20px;
+  border: 1.5px solid var(--grey-300);
+  border-radius: 50%;
+
+  &.on {
+    border: 6px solid var(--primary);
+  }
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  align-self: flex-start;
+  min-height: 22px;
+  padding: 0 10px;
+  border-radius: 999px;
+  background: var(--grey-100);
+  color: var(--text-title);
+  font-size: 11px;
+  font-weight: 600;
+
+  &.mint {
+    background: rgba(109, 212, 126, 0.25);
+  }
+}
+
+.dot {
+  flex: none;
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+
+  &.square {
+    border-radius: 3px;
+  }
+}
+
+.stack {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.grow {
+  flex: 1;
+  min-width: 0;
+}
+
+.spinner {
+  width: 16px;
+  height: 16px;
+  border: 2px solid currentColor;
+  border-right-color: transparent;
+  border-radius: 50%;
+  animation: spin 700ms linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes enter-right {
+  from {
+    opacity: 0;
+    transform: translateX(24px);
+  }
+}
+
+@keyframes enter-left {
+  from {
+    opacity: 0;
+    transform: translateX(-24px);
+  }
+}
+
+@keyframes fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+}
+
+@keyframes dialog-in {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -48%) scale(0.98);
+  }
+}

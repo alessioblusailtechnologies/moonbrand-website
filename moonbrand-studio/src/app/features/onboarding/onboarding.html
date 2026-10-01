@@ -1,0 +1,86 @@
+@let step = store.step();
+@let draft = store.draft();
+
+<div class="scrim"></div>
+<div class="dialog" role="dialog" aria-modal="true" aria-label="Nuovo brand">
+  <header class="bar">
+    <div class="bar-side">
+      @if (!creating()) {
+        @if (store.stepIndex() > 0 && draft) {
+          <button class="icon-btn" type="button" aria-label="Passo precedente" (click)="store.back()">
+            <mb-icon name="chevron-left" />
+          </button>
+        } @else if (!canClose()) {
+          <mb-logo />
+        }
+      }
+    </div>
+    <div class="bar-center">
+      <span class="label">{{ preparing() ? 'Quasi pronto' : step === 'intro' ? 'Configurazione' : 'Passo ' + store.stepIndex() + ' di ' + total }}</span>
+      <div class="progress" aria-hidden="true">
+        @for (segment of segments; track segment) {
+          <span [class.on]="preparing() || (draft && segment <= store.stepIndex())"></span>
+        }
+      </div>
+    </div>
+    <div class="bar-side end">
+      @if (skippable()) {
+        <button class="link-btn muted" type="button" (click)="skip()">Lo faccio dopo</button>
+      }
+      @if (canClose() && !creating()) {
+        <button class="icon-btn" type="button" aria-label="Chiudi" (click)="close()">
+          <mb-icon name="x" />
+        </button>
+      }
+    </div>
+  </header>
+
+  <main class="page">
+    @if (preparing()) {
+      <div class="step">
+        <div class="titles">
+          <h1 class="title">Preparo il tuo brand</h1>
+          <p class="body">Studio lo stile dei riferimenti e preparo le prime idee: quando ho finito ti porto in chat.</p>
+        </div>
+        <mb-step-list [steps]="steps()" waiting="Rileggo il brand" />
+      </div>
+    } @else {
+      @for (key of [step]; track key) {
+        <div class="step" [class.back]="store.direction() === -1">
+          <div class="titles">
+            <h1 class="title">{{ copy().title }}</h1>
+            <p class="body">{{ copy().subtitle }}</p>
+          </div>
+
+          @if (key === 'intro') {
+            <mb-intro-step />
+          } @else if (draft) {
+            @switch (key) {
+              @case ('identity') { <mb-identity-step [draft]="draft" /> }
+              @case ('positioning') { <mb-positioning-step [draft]="draft" /> }
+              @case ('channels') { <mb-channels-step [draft]="draft" /> }
+              @case ('themes') { <mb-themes-step [draft]="draft" /> }
+              @case ('voice') { <mb-voice-step [draft]="draft" /> }
+              @case ('visual') { <mb-visual-step [draft]="draft" /> }
+              @case ('summary') { <mb-summary-step [draft]="draft" /> }
+            }
+          }
+        </div>
+      }
+    }
+  </main>
+
+  @if (!preparing()) {
+    <footer class="footer">
+      <div class="footer-inner">
+        <button class="btn btn-lg" type="button" [class.btn-accent]="step === 'summary'" [class.btn-primary]="step !== 'summary'"
+          [class.busy]="creating()" [attr.aria-disabled]="(step === 'intro' && !draft) || error() !== null" (click)="primary()">
+          @if (creating()) {
+            <span class="spinner"></span>
+          }
+          {{ primaryLabel() }}
+        </button>
+      </div>
+    </footer>
+  }
+</div>

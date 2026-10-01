@@ -1,0 +1,63 @@
+:host {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  min-height: 100vh;
+}
+
+.main {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 28px;
+  padding: 40px 24px;
+}
+
+.mobile-logo {
+  display: none;
+}
+
+form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: min(400px, 100%);
+}
+
+.head {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 14px;
+}
+
+.error {
+  padding: 12px 14px;
+  border-radius: var(--radius-md);
+  background: rgba(214, 69, 40, 0.1);
+  color: var(--danger);
+  font-size: 13px;
+}
+
+.submit {
+  margin-top: 8px;
+}
+
+.switch {
+  margin-top: 10px;
+  text-align: center;
+}
+
+@media (max-width: 860px) {
+  :host {
+    grid-template-columns: 1fr;
+  }
+
+  mb-auth-side {
+    display: none;
+  }
+
+  .mobile-logo {
+    display: inline-flex;
+  }
+}

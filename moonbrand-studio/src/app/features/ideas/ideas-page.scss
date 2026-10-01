@@ -1,0 +1,200 @@
+.ideas {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  margin: 0 auto;
+  animation: fade-up 240ms var(--ease);
+}
+
+.toolbar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
+
+.tabs {
+  flex: none;
+  width: 230px;
+  background: var(--surface-card);
+
+  button {
+    min-height: 28px;
+  }
+
+  button.selected {
+    background: var(--primary);
+    color: var(--white);
+  }
+}
+
+.filters-wrap {
+  position: relative;
+  display: flex;
+  flex: 1;
+  min-width: 0;
+}
+
+.scroll {
+  position: absolute;
+  top: 50%;
+  z-index: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  padding: 0;
+  border: 1.5px solid var(--grey-300);
+  border-radius: 999px;
+  background: var(--white);
+  color: var(--primary);
+  cursor: pointer;
+  transform: translateY(-50%);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
+
+  &:hover {
+    border-color: var(--primary);
+  }
+
+  &.left {
+    left: 0;
+  }
+
+  &.right {
+    right: 0;
+  }
+}
+
+// Una riga sola: se i temi non ci stanno si scorre con le frecce, i nomi lunghi si accorciano.
+.filters {
+  display: flex;
+  flex: 1;
+  gap: 6px;
+  min-width: 0;
+  overflow-x: auto;
+  scrollbar-width: none;
+
+  &.fade-right {
+    mask-image: linear-gradient(to right, #000 calc(100% - 64px), transparent);
+  }
+
+  &.fade-left {
+    mask-image: linear-gradient(to left, #000 calc(100% - 64px), transparent);
+  }
+
+  &.fade-left.fade-right {
+    mask-image: linear-gradient(to right, transparent, #000 64px, #000 calc(100% - 64px), transparent);
+  }
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+
+  .chip {
+    flex: none;
+    max-width: 220px;
+    min-height: 30px;
+    padding: 0 12px;
+    overflow: hidden;
+    font-size: 12px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+}
+
+.preparing {
+  gap: 10px;
+}
+
+.undo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+}
+
+.empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 48px 16px;
+  text-align: center;
+}
+
+// Masonry: le colonne crescono ognuna per conto suo, senza buchi tra card di altezza diversa.
+.grid {
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+}
+
+.column {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 16px;
+  min-width: 0;
+}
+
+.idea {
+  gap: 12px;
+
+  .heading {
+    margin: 0;
+  }
+
+  .body {
+    margin: 0;
+  }
+}
+
+.meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 12px;
+}
+
+.source {
+  color: var(--text-title);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.theme {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.why {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 12px 14px;
+  border-radius: var(--radius-md);
+  background: var(--surface-sunken);
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+@media (max-width: 640px) {
+  .toolbar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .tabs {
+    width: 100%;
+  }
+
+}

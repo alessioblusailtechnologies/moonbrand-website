@@ -1,0 +1,84 @@
+.content-page {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  margin: 0 auto;
+  animation: fade-up 240ms var(--ease);
+}
+
+.empty {
+  display: grid;
+  place-items: center;
+  padding: 48px 16px;
+}
+
+.meta {
+  display: flex;
+  gap: 6px;
+}
+
+.edit {
+  position: sticky;
+  bottom: 16px;
+  padding: 10px;
+  border-radius: var(--radius-xl);
+  background: var(--surface-card);
+  box-shadow: var(--shadow-menu);
+}
+
+.in-chat {
+  align-self: flex-start;
+  gap: 6px;
+  text-decoration: none;
+}
+
+.channel-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 12px;
+
+  .label,
+  .caption {
+    margin: 0;
+  }
+}
+
+.chip.on-channel {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  min-height: 32px;
+  cursor: default;
+
+  &.removable {
+    padding-right: 6px;
+  }
+}
+
+.remove {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  padding: 0;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+
+  &:hover:not(:disabled) {
+    background: rgba(255, 255, 255, 0.18);
+  }
+}
+
+.chip.add {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  min-height: 32px;
+  border-style: dashed;
+  color: var(--primary-soft);
+}

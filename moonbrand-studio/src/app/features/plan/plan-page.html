@@ -1,0 +1,178 @@
+@if (brands.activeBrand()) {
+  <section class="plan-page">
+    <div class="toolbar">
+      <div class="segmented modes" role="tablist" aria-label="Vista del calendario">
+        <button type="button" role="tab" [attr.aria-selected]="mode() === 'month'" [class.selected]="mode() === 'month'" (click)="mode.set('month')">Mese</button>
+        <button type="button" role="tab" [attr.aria-selected]="mode() === 'week'" [class.selected]="mode() === 'week'" (click)="mode.set('week')">Settimana</button>
+      </div>
+      <div class="nav">
+        <button class="icon-btn" type="button" [attr.aria-label]="mode() === 'month' ? 'Mese precedente' : 'Settimana precedente'" (click)="move(-1)">
+          <mb-icon name="chevron-left" />
+        </button>
+        <h2 class="period">{{ title() }}</h2>
+        <button class="icon-btn" type="button" [attr.aria-label]="mode() === 'month' ? 'Mese successivo' : 'Settimana successiva'" (click)="move(1)">
+          <mb-icon name="chevron-right" />
+        </button>
+        <button class="btn btn-secondary btn-sm" type="button" (click)="goToday()">Oggi</button>
+      </div>
+      <p class="caption summary">{{ summary() }}</p>
+    </div>
+
+    <div class="layout">
+      <div class="calendar" [class.week]="mode() === 'week'" [class.dragging]="dragged() !== null">
+        @if (mode() === 'month') {
+          <div class="weekdays" aria-hidden="true">
+            @for (weekday of weekdays; track weekday) {
+              <span>{{ weekday }}</span>
+            }
+          </div>
+        }
+        @if (loading()) {
+          <div class="empty"><span class="spinner"></span></div>
+        } @else {
+          <div class="grid" role="grid" [attr.aria-label]="title()">
+            @for (day of days(); track day.date) {
+              <div
+                class="day"
+                role="gridcell"
+                [class.out]="!day.inMonth && mode() === 'month'"
+                [class.today]="day.today"
+                [class.past]="day.past"
+                [class.drop]="dropDate() === day.date"
+                (dragover)="dragOver($event, day)"
+                (dragleave)="dragLeave(day)"
+                (drop)="drop($event, day)"
+              >
+                <div class="day-head">
+                  @if (mode() === 'week') {
+                    <span class="weekday">{{ weekdays[$index] }}</span>
+                  }
+                  <span class="number">{{ day.number }}</span>
+                  @if (!day.past) {
+                    <button class="add" type="button" [attr.aria-label]="'Aggiungi un’uscita il ' + day.date" (click)="add(day.date)">
+                      <mb-icon name="plus" [size]="14" />
+                    </button>
+                  }
+                </div>
+
+                <div class="slots">
+                  @for (slot of mode() === 'month' ? day.slots.slice(0, visible) : day.slots; track slot.id) {
+                    <button
+                      class="slot"
+                      [class.card]="mode() === 'week'"
+                      type="button"
+                      [style.--tone]="tones[slot.status]"
+                      [attr.draggable]="canMove(slot)"
+                      [attr.aria-label]="slot.time + ', ' + slotTitle(slot) + ', ' + statusLabels[slot.status]"
+                      (dragstart)="dragStart($event, { kind: 'slot', slot })"
+                      (dragend)="dragEnd()"
+                      (click)="open(slot)"
+                    >
+                      @if (mode() === 'week' && slot.content?.coverUrl; as cover) {
+                        <img class="cover" [src]="cover" alt="" loading="lazy" draggable="false" />
+                      }
+                      <span class="slot-head">
+                        <span class="time">{{ slot.time }}</span>
+                        <span class="marks">
+                          @for (channel of slot.channels; track channel) {
+                            <mb-channel-mark [channel]="channel" [active]="true" [size]="12" />
+                          }
+                        </span>
+                      </span>
+                      <span class="slot-title" [class.muted]="!slot.content && !slot.idea">{{ slotTitle(slot) }}</span>
+                      @if (mode() === 'week') {
+                        <span class="slot-foot">
+                          <span class="status">{{ statusLabels[slot.status] }}</span>
+                          @if (themeColor(slot.themeId); as color) {
+                            <span class="dot" [style.background]="color" [attr.title]="themeName(slot.themeId)"></span>
+                          }
+                        </span>
+                      }
+                    </button>
+                  }
+                  @if (mode() === 'month' && day.slots.length > visible) {
+                    <button class="more link-btn" type="button" (click)="openWeek(day.date)">+{{ day.slots.length - visible }} altre</button>
+                  }
+                </div>
+              </div>
+            }
+          </div>
+        }
+      </div>
+
+      <aside class="side panel" aria-label="Da programmare">
+        <div class="side-head">
+          <p class="strong-sm">Da programmare</p>
+          <p class="caption">Trascinali su un giorno, o toccali per scegliere quando.</p>
+        </div>
+        <div class="segmented" role="tablist" aria-label="Cosa programmare">
+          <button type="button" role="tab" [attr.aria-selected]="panel() === 'contents'" [class.selected]="panel() === 'contents'" (click)="panel.set('contents')">
+            Contenuti · {{ plan()?.unscheduled?.length ?? 0 }}
+          </button>
+          <button type="button" role="tab" [attr.aria-selected]="panel() === 'ideas'" [class.selected]="panel() === 'ideas'" (click)="panel.set('ideas')">
+            Idee · {{ plan()?.ideas?.length ?? 0 }}
+          </button>
+        </div>
+
+        <div class="items">
+          @if (panel() === 'contents') {
+            @for (content of plan()?.unscheduled ?? []; track content.id) {
+              <button class="item" type="button" draggable="true" (dragstart)="dragStart($event, { kind: 'content', content })" (dragend)="dragEnd()"
+                (click)="pickContent(content)">
+                <span class="thumb">
+                  @if (content.coverUrl) {
+                    <img [src]="content.coverUrl" alt="" loading="lazy" draggable="false" />
+                  }
+                </span>
+                <span class="item-texts">
+                  <span class="item-title">{{ content.title }}</span>
+                  <span class="caption">{{ formatLabels[content.format] }} · {{ content.status === 'approved' ? 'Approvato' : 'Bozza' }}</span>
+                </span>
+              </button>
+            } @empty {
+              <p class="caption none">Tutti i contenuti sono nel piano. I nuovi li trovi qui.</p>
+            }
+          } @else {
+            @for (idea of plan()?.ideas ?? []; track idea.id) {
+              <button class="item" type="button" draggable="true" (dragstart)="dragStart($event, { kind: 'idea', idea })" (dragend)="dragEnd()"
+                (click)="pickIdea(idea)">
+                <span class="idea-mark" [style.background]="themeColor(idea.themeId) ?? 'var(--grey-300)'"></span>
+                <span class="item-texts">
+                  <span class="item-title">{{ idea.title }}</span>
+                  @if (themeName(idea.themeId); as theme) {
+                    <span class="caption">{{ theme }}</span>
+                  }
+                </span>
+              </button>
+            } @empty {
+              <p class="caption none">Le idee che salvi in <a routerLink="/">Idee</a> compaiono qui.</p>
+            }
+          }
+        </div>
+      </aside>
+    </div>
+  </section>
+
+  @if (plan(); as current) {
+    @if (opened() || drafting()) {
+      <mb-slot-drawer
+        [slot]="opened()"
+        [draft]="drafting()"
+        [plan]="current"
+        [busy]="busy()"
+        (closed)="closeDrawer()"
+        (saved)="afterSave()"
+        (prepare)="prepareInChat($event)"
+      />
+    }
+    @if (planning()) {
+      <mb-plan-session [plan]="current" (closed)="planning.set(false)" (confirmed)="afterPlan($event)" />
+    }
+  }
+}
+
+<ng-template #headerActions>
+  <button class="btn btn-primary btn-sm" type="button" [disabled]="!plan()" (click)="planning.set(true)">
+    <mb-icon name="calendar" [size]="16" /> Pianifica
+  </button>
+</ng-template>

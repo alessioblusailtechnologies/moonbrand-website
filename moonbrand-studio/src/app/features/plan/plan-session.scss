@@ -1,0 +1,166 @@
+.backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 70;
+  background: var(--scrim);
+  animation: fade-in 160ms var(--ease);
+}
+
+.dialog {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  z-index: 71;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  width: min(720px, calc(100vw - 32px));
+  max-height: calc(100vh - 32px);
+  padding: 24px;
+  border-radius: var(--radius-lg);
+  background: var(--surface-card);
+  box-shadow: var(--shadow-menu);
+  transform: translate(-50%, -50%);
+  animation: dialog-in 180ms var(--ease);
+}
+
+.dialog-head {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.stack-sm {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.dialog-title {
+  margin: 0;
+  color: var(--text-title);
+  font-size: 17px;
+  font-weight: 600;
+}
+
+.settings {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 12px 16px;
+}
+
+.setting {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+
+  .label {
+    margin: 0;
+  }
+
+  &.wide {
+    grid-column: 1 / -1;
+  }
+}
+
+.stepper {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+
+  .strong {
+    min-width: 16px;
+    text-align: center;
+  }
+}
+
+.proposal {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-height: 80px;
+  overflow-y: auto;
+  transition: opacity 150ms var(--ease);
+
+  &.loading {
+    opacity: 0.55;
+  }
+}
+
+.draft {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 8px 8px 0;
+  border: 1px solid var(--border-card);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+}
+
+.theme-bar {
+  flex: none;
+  width: 4px;
+  align-self: stretch;
+}
+
+.draft-when {
+  display: flex;
+  flex-direction: column;
+  width: 84px;
+  flex: none;
+}
+
+.marks {
+  display: inline-flex;
+  flex: none;
+  gap: 4px;
+}
+
+.draft-texts {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.draft-title {
+  overflow: hidden;
+  font-size: 13px;
+  font-weight: 600;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+
+  &.muted {
+    color: var(--text-body);
+    font-style: italic;
+    font-weight: 500;
+  }
+}
+
+.none {
+  padding: 16px 4px;
+}
+
+.dialog-foot {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+
+.hint {
+  margin: 0;
+  color: var(--accent-strong);
+}
+
+@media (max-width: 640px) {
+  .draft {
+    flex-wrap: wrap;
+    padding-left: 10px;
+  }
+
+  .theme-bar {
+    display: none;
+  }
+}

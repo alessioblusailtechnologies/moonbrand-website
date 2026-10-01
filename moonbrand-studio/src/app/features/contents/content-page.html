@@ -1,0 +1,87 @@
+<section class="content-page">
+  @if (loading()) {
+    <div class="empty"><span class="spinner"></span></div>
+  } @else if (content(); as current) {
+    <div class="meta">
+      <span class="badge">{{ formatLabel() }}</span>
+      <span class="badge" [class.mint]="current.status === 'approved'">{{ statusLabel() }}</span>
+    </div>
+
+    @if ((ready() || scripted()) && !preparing()) {
+      <div class="channel-bar">
+        <p class="label">Esce su</p>
+        <div class="chips">
+          @for (channel of current.channels; track channel) {
+            <span class="chip selected on-channel" [class.removable]="current.channels.length > 1">
+              {{ name(channel) }}
+              @if (current.channels.length > 1) {
+                <button class="remove" type="button" [attr.aria-label]="'Togli ' + name(channel)" [disabled]="changingChannels()"
+                  (click)="removeChannel(channel)">
+                  <mb-icon name="x" [size]="14" />
+                </button>
+              }
+            </span>
+          }
+          @for (channel of addable(); track channel) {
+            <button class="chip add" type="button" [disabled]="changingChannels()" (click)="addChannel(channel)">
+              <mb-icon name="plus" [size]="14" /> {{ name(channel) }}
+            </button>
+          }
+        </div>
+        @if (unsupported()) {
+          <p class="caption">{{ unsupported() }}</p>
+        }
+      </div>
+    }
+
+    @if ((ready() || scripted()) && !preparing()) {
+      <mb-content-schedule [content]="current" [slot]="slot()" (changed)="slot.set($event)" />
+    }
+
+    @if (preparing()) {
+      <div class="panel">
+        <p class="strong-sm">{{ workLabel() }}</p>
+        <mb-step-list [steps]="steps()" waiting="Rileggo l’idea e il brand" />
+        <mb-pending-media [tiles]="pending()" />
+      </div>
+    }
+
+    @if (ready()) {
+      <mb-content-preview [content]="current" [editable]="!preparing()" (updated)="show($event)" />
+    }
+
+    @if (scripted() && !current.conversationId) {
+      <mb-script-editor [content]="current" [busy]="preparing()" (saved)="saveScript($event)" (generated)="generateVideo($event)" />
+    }
+
+    @if (ready() || scripted()) {
+      @if (current.conversationId) {
+        <a class="btn btn-secondary btn-sm in-chat" [routerLink]="['/assistente', current.conversationId]">
+          <mb-icon name="message-circle" [size]="16" /> Ritocca nella conversazione
+        </a>
+      } @else {
+        <div class="row edit">
+          <input class="sunken grow" aria-label="Cosa ritoccare"
+            [placeholder]="ready() ? 'Cosa cambio? es. più corto su Instagram, un’altra foto in copertina' : 'Cosa cambio nel copione? es. più breve, apri con una domanda'"
+            [value]="instruction()" [disabled]="preparing()" (input)="instruction.set($any($event.target).value)" (keydown.enter)="send()" />
+          <button class="icon-btn solid" type="button" aria-label="Invia il ritocco" [disabled]="preparing() || !instruction().trim()" (click)="send()">
+            <mb-icon name="arrow-up" />
+          </button>
+        </div>
+      }
+    }
+  }
+</section>
+
+<!-- Nella topbar, accanto al brand. -->
+<ng-template #headerActions>
+  @if (content(); as current) {
+    @if (!current.conversationId) {
+      <button class="btn btn-secondary btn-sm" type="button" (click)="regenerate()">Rigenera da zero</button>
+    }
+    <button class="btn btn-sm" type="button" [class.btn-primary]="current.status !== 'approved'" [class.btn-secondary]="current.status === 'approved'"
+      (click)="toggleApproved()">
+      {{ current.status === 'approved' ? 'Riapri' : 'Approva' }}
+    </button>
+  }
+</ng-template>

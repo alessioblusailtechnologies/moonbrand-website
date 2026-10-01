@@ -1,0 +1,374 @@
+// La chat sta sul bianco della pagina, senza riquadro e a tutta larghezza: il filo e la casella in fondo.
+.chat {
+  display: flex;
+  flex-direction: column;
+  height: calc(100dvh - 2 * var(--frame, 0px) - var(--topbar-height) - 2 * var(--content-padding, 32px));
+  min-height: 480px;
+  margin: 0 auto;
+  animation: fade-up 240ms var(--ease);
+}
+
+.thread {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 28px;
+  padding: 0 4px 24px;
+  overflow-y: auto;
+}
+
+.empty {
+  display: grid;
+  flex: 1;
+  place-items: center;
+}
+
+// Una conversazione nuova: titolo, testo, la casella e gli spunti in una colonna al centro;
+// la conversazione aperta usa invece tutta la pagina.
+.welcome {
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+  width: min(760px, 100%);
+  margin: auto;
+  padding: 16px 0 6vh;
+}
+
+.intro {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.hero {
+  font-size: 44px;
+  font-weight: 600;
+  line-height: 1.05;
+  letter-spacing: -0.035em;
+}
+
+.greeting {
+  display: block;
+  text-wrap: balance;
+  animation: fade-up 320ms var(--ease);
+
+  &.pending {
+    animation: none;
+  }
+}
+
+.lead {
+  max-width: 600px;
+  color: var(--text-body);
+  font-size: 16px;
+  line-height: 1.55;
+  text-wrap: pretty;
+}
+
+// Gli spunti: schede con l'icona arancio, due per riga quando c'è posto.
+.suggestions {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr));
+  gap: 10px;
+}
+
+.suggestion {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 16px;
+  border: 1px solid var(--border-card);
+  border-radius: 14px;
+  background: var(--white);
+  color: #1d2939;
+  font-size: 14px;
+  line-height: 1.35;
+  text-align: left;
+  cursor: pointer;
+  // Quando arrivano quelli di oggi, entrano come il saluto.
+  animation: fade-up 320ms var(--ease);
+  transition:
+    border-color 120ms var(--ease),
+    background-color 120ms var(--ease);
+
+  &:hover {
+    border-color: var(--grey-300);
+    background: #fdfcfa;
+  }
+}
+
+.suggestion-icon {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  border-radius: var(--radius-sm);
+  background: var(--accent-tint);
+  color: var(--accent-strong);
+}
+
+.suggestion-text {
+  flex: 1;
+}
+
+// Nella topbar: il brand kit che l'assistente sta usando.
+.kit {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 10px;
+  border-radius: 999px;
+  background: var(--grey-100);
+  color: #475467;
+  font-size: 12.5px;
+  text-decoration: none;
+  white-space: nowrap;
+
+  &:hover {
+    color: var(--text-title);
+  }
+}
+
+.kit-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--success);
+}
+
+@media (max-width: 760px) {
+  .hero {
+    font-size: 34px;
+  }
+
+  .kit {
+    display: none;
+  }
+}
+
+.turn {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  animation: fade-up 200ms var(--ease);
+}
+
+.photos {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 6px;
+  align-self: flex-end;
+  max-width: 80%;
+}
+
+.photo {
+  width: 96px;
+  height: 96px;
+  padding: 0;
+  overflow: hidden;
+  border: 0;
+  border-radius: var(--radius-md);
+  background: var(--surface-sunken);
+  cursor: zoom-in;
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+}
+
+// Un video allegato si guarda nel messaggio, alto quanto basta per vederlo bene anche in verticale.
+.attached-video {
+  display: block;
+  max-width: 240px;
+  max-height: 320px;
+  border-radius: var(--radius-md);
+  background: var(--primary);
+}
+
+.mine {
+  align-self: flex-end;
+  max-width: 80%;
+  padding: 10px 16px;
+  border-radius: var(--radius-lg) var(--radius-lg) 4px var(--radius-lg);
+  background: var(--primary);
+  color: var(--white);
+  font-size: 14px;
+  line-height: 1.55;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.reply {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  max-width: 100%;
+  margin-top: 4px;
+}
+
+// I passaggi di un blocco: la stessa lista delle idee e dell'onboarding, in un riquadro.
+.tools {
+  width: min(560px, 100%);
+  padding: 12px 14px;
+  border: 1px solid var(--border-card);
+  border-radius: var(--radius-lg);
+}
+
+.thinking {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  .spinner {
+    width: 12px;
+    height: 12px;
+  }
+}
+
+.failed {
+  color: var(--danger);
+}
+
+.bottom {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding-top: 8px;
+}
+
+.saved {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+}
+
+.saved-card {
+  display: flex;
+  flex: none;
+  align-items: center;
+  gap: 10px;
+  max-width: 280px;
+  padding: 6px 12px 6px 6px;
+  border: 1px solid var(--border-card);
+  border-radius: var(--radius-md);
+  color: inherit;
+  text-decoration: none;
+
+  &:hover {
+    border-color: var(--grey-500);
+  }
+}
+
+.thumb {
+  flex: none;
+  width: 36px;
+  height: 45px;
+  overflow: hidden;
+  border-radius: 6px;
+  background: var(--grey-300);
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+}
+
+.saved-texts {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.saved-title {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+// Un contenuto salvato nella conversazione, intero: immagini e testi come nella pagina del contenuto.
+.content-card {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-top: 6px;
+  padding: 18px;
+  border: 1px solid var(--border-card);
+  border-radius: var(--radius-lg);
+  background: var(--white);
+}
+
+.content-card-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.content-card-titles {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+}
+
+.content-card-meta {
+  display: flex;
+  gap: 6px;
+}
+
+.open-content {
+  flex: none;
+  gap: 4px;
+  text-decoration: none;
+}
+
+// L'idea menzionata nel messaggio: sotto la bolla, come un riferimento da aprire.
+.mention {
+  display: inline-flex;
+  align-self: flex-end;
+  align-items: flex-start;
+  gap: 8px;
+  max-width: min(80%, 460px);
+  padding: 9px 14px;
+  border: 1px solid var(--border-card);
+  border-radius: var(--radius-md);
+  background: var(--surface-card);
+  color: var(--text-title);
+  text-decoration: none;
+  transition: border-color 120ms var(--ease);
+
+  &:hover {
+    border-color: var(--primary);
+  }
+
+  mb-icon {
+    margin-top: 2px;
+    color: var(--accent-strong);
+  }
+}
+
+.mention-texts {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.mention-kind {
+  color: var(--text-body);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.mention-title {
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.4;
+}

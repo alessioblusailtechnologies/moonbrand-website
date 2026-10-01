@@ -1,0 +1,63 @@
+<section id="sistema" class="features" data-screen-label="Sistema">
+  <div class="inner">
+    <h2 class="display h2">Un sistema costruito sul tuo brand</h2>
+    <div class="grid">
+      <div class="stack">
+        <div class="tile">
+          <span class="tile-title">Dalle tue foto al post</span>
+          <span class="tile-text">Carichi una foto dal telefono e ottieni caption o carosello, già nel tuo stile.</span>
+          <a href="#prova" class="btn btn-dark btn-small push">Provalo ora</a>
+        </div>
+        <div class="tile">
+          <span class="tile-title">Più brand, zero confusione</span>
+          <span class="tile-text">Ogni azienda ha il suo brand kit, le sue idee e i suoi contenuti. Passi da una all’altra in un clic.</span>
+        </div>
+      </div>
+
+      <div class="assistant">
+        <span class="assistant-title">Un assistente che ricorda il tuo brand, invece di ripartire da zero ogni volta</span>
+        <span class="assistant-text">Tone of voice, parole da evitare, cosa hai pubblicato: tutto entra in ogni risposta, senza doverlo rispiegare.</span>
+        <a href="#piattaforma" class="btn btn-dark btn-small">Scopri l’assistente</a>
+        <div class="chat">
+          <div class="msg me">Cosa ho pubblicato questo mese?</div>
+          <div class="msg ai">18 contenuti, quasi tutti sul lancio delle Buds (2). Del team non parli da tre settimane: vuoi qualche idea?</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .features { padding: clamp(96px, 11vw, 140px) 24px; }
+  .inner { max-width: 1100px; margin: 0 auto; display: flex; flex-direction: column; gap: 48px; }
+  h2 { margin: 0 auto; max-width: 760px; }
+  .grid { display: flex; flex-wrap: wrap; gap: 12px; }
+  .stack { flex: 1 1 300px; display: flex; flex-direction: column; gap: 12px; }
+  .tile { flex: 1; background: #F6F5F2; border-radius: 16px; padding: 24px; display: flex; flex-direction: column; gap: 10px; }
+  .tile-title { font-size: 18px; font-weight: 600; letter-spacing: -0.01em; }
+  .tile-text { font-size: 14.5px; line-height: 1.55; color: var(--muted); }
+  .push { margin-top: auto; }
+
+  .assistant { flex: 2 1 520px; background: var(--accent-soft); border-radius: 16px; padding: 28px; display: flex; flex-direction: column; gap: 12px; overflow: hidden; }
+  .assistant-title { font-size: 22px; font-weight: 600; letter-spacing: -0.02em; max-width: 460px; }
+  .assistant-text { font-size: 15px; line-height: 1.55; color: #5C4A33; max-width: 480px; }
+  .chat {
+    margin-top: 18px;
+    align-self: flex-end;
+    width: min(100%, 520px);
+    background: #fff;
+    border-radius: 12px;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    box-shadow: 0 20px 40px -20px rgba(122, 74, 14, 0.35);
+  }
+  .msg { font-size: 13.5px; }
+  .me { align-self: flex-end; background: var(--ink); color: #fff; padding: 9px 12px; border-radius: 12px 12px 3px 12px; }
+  .ai { background: #F7F6F3; line-height: 1.5; padding: 10px 12px; border-radius: 12px; max-width: 92%; }
+
+  @media (max-width: 560px) {
+    .assistant { flex-basis: 100%; }
+  }
+</style>

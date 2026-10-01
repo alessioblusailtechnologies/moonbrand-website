@@ -1,0 +1,173 @@
+.backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 70;
+  background: var(--scrim);
+  animation: fade-in 160ms var(--ease);
+}
+
+// Il pannello entra da destra; sul telefono occupa tutto lo schermo.
+.sheet {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 71;
+  display: flex;
+  flex-direction: column;
+  width: min(440px, 100vw);
+  background: var(--surface-card);
+  box-shadow: var(--shadow-menu);
+  animation: sheet-in 200ms var(--ease);
+}
+
+@keyframes sheet-in {
+  from {
+    transform: translateX(24px);
+    opacity: 0;
+  }
+}
+
+.sheet-head {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 20px 20px 12px;
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.titles {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.status {
+  align-self: flex-start;
+  padding: 2px 10px 2px 8px;
+  border-left: 3px solid var(--tone);
+  border-radius: 4px;
+  background: var(--surface-sunken);
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.sheet-title {
+  margin: 0;
+  color: var(--text-title);
+  font-size: 17px;
+  font-weight: 600;
+  line-height: 1.35;
+}
+
+.sheet-body {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 16px;
+  padding: 16px 20px;
+  overflow-y: auto;
+}
+
+.field-line {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+
+  .label,
+  .caption {
+    margin: 0;
+  }
+}
+
+select.sunken {
+  appearance: auto;
+}
+
+.when {
+  display: grid;
+  grid-template-columns: 1.4fr 1fr;
+  gap: 10px;
+}
+
+.marks {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin: 0;
+}
+
+.mark {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.chip:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.content-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px;
+  border: 1px solid var(--border-card);
+  border-radius: var(--radius-md);
+  color: var(--text-title);
+  text-decoration: none;
+  transition: border-color 120ms var(--ease);
+
+  &:hover {
+    border-color: var(--primary);
+  }
+}
+
+.thumb {
+  flex: none;
+  width: 52px;
+  height: 52px;
+  overflow: hidden;
+  border-radius: 8px;
+  background: var(--surface-sunken);
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+}
+
+.content-texts {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.warn {
+  color: var(--danger);
+}
+
+.sheet-foot {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  padding: 14px 20px;
+  border-top: 1px solid var(--border-subtle);
+
+  .btn {
+    gap: 6px;
+  }
+}
+
+.danger {
+  color: var(--danger);
+}

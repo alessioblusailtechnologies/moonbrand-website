@@ -1,0 +1,42 @@
+---
+import type { ExamplePost } from '../data/home';
+
+interface Props {
+  post: ExamplePost;
+  /** I formati verticali mettono l'interfaccia sopra il media: il segnaposto si scurisce ai bordi. */
+  immersive?: boolean;
+}
+
+const { post, immersive = false } = Astro.props;
+---
+
+<div
+  class:list={['media', { immersive }]}
+  style={`aspect-ratio:${post.ratio};--s1:${post.s1};--s2:${post.s2}`}
+>
+  {post.image ? (
+    <img src={post.image} alt={post.ph} loading="lazy" />
+  ) : (
+    <span class="ph mono">{post.ph}</span>
+  )}
+  <slot />
+</div>
+
+<style>
+  .media {
+    position: relative;
+    display: grid;
+    place-items: center;
+    overflow: hidden;
+    background: repeating-linear-gradient(135deg, var(--s1) 0 10px, var(--s2) 10px 20px);
+  }
+  .media img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+  .ph { font-size: 11px; color: #8A8F99; }
+  .immersive::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background: linear-gradient(180deg, rgba(0, 0, 0, 0.35) 0%, transparent 18%, transparent 55%, rgba(0, 0, 0, 0.6) 100%);
+  }
+</style>

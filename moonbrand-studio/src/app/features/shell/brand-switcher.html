@@ -1,0 +1,16 @@
+@let active = brands.activeBrand();
+<button class="trigger" type="button" aria-haspopup="dialog" [class.compact]="compact()" [attr.aria-expanded]="picker.isOpen()"
+  [attr.title]="compact() ? active?.name : 'Cambia brand'" (click)="picker.open()">
+  @if (active) {
+    <mb-brand-avatar [name]="active.name" [logo]="active.logoUri" [color]="active.color" [size]="32" />
+    @if (!compact()) {
+      <span class="trigger-text">
+        <span class="trigger-name">{{ active.name }}</span>
+        <span class="trigger-kind">{{ kindLabel(active.kind) }}</span>
+      </span>
+    }
+  }
+  @if (!compact()) {
+    <mb-icon name="chevrons-up-down" [size]="16" class="chevron" />
+  }
+</button>

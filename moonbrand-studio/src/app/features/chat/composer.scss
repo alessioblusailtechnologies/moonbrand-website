@@ -1,0 +1,185 @@
+:host {
+  display: block;
+}
+
+// La casella: una scheda bianca con un'ombra leggera, il testo sopra, allegati e invio in una barra sotto.
+.composer {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 16px 16px 12px;
+  border: 1px solid #e4e4e0;
+  border-radius: var(--radius-xl);
+  background: var(--white);
+  box-shadow: var(--shadow-card);
+  transition: border-color 120ms var(--ease);
+
+  &:focus-within {
+    border-color: var(--grey-300);
+  }
+}
+
+.composer-input {
+  width: 100%;
+  min-height: 24px;
+  max-height: 240px;
+  padding: 4px 4px 8px;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  color: var(--text-title);
+  font-family: inherit;
+  font-size: 15px;
+  line-height: 1.5;
+  resize: none;
+  field-sizing: content;
+
+  &::placeholder {
+    color: var(--grey-500);
+  }
+}
+
+// Più alta dove si scrive il primo messaggio: la conversazione nuova, la finestra dell'idea.
+:host(.tall) .composer-input {
+  min-height: 80px;
+  font-size: 16px;
+}
+
+.composer-bar {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+
+  .send {
+    width: 36px;
+    height: 36px;
+
+    // Spenta resta grigia, senza trasparenza: si capisce che manca il testo.
+    &:disabled {
+      background: #eaecf0;
+      color: var(--grey-500);
+      opacity: 1;
+    }
+  }
+}
+
+.attach {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  height: 34px;
+  padding: 0 12px;
+  border: 1px solid #e4e4e0;
+  border-radius: 999px;
+  background: var(--white);
+  color: #344054;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 120ms var(--ease);
+
+  &:hover {
+    background: #f6f5f2;
+  }
+}
+
+.pending {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.pending-photo {
+  position: relative;
+  width: 64px;
+  height: 64px;
+  overflow: hidden;
+  border-radius: var(--radius-md);
+  background: var(--surface-sunken);
+
+  img,
+  video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  &.failed img,
+  &.failed video {
+    opacity: 0.35;
+  }
+}
+
+.pending-progress {
+  font-size: 12px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.pending-video {
+  position: absolute;
+  bottom: 4px;
+  left: 4px;
+  display: grid;
+  place-items: center;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.75);
+  color: var(--white);
+}
+
+.pending-state {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  background: rgba(255, 255, 255, 0.55);
+  color: var(--primary);
+}
+
+.pending-remove {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  display: grid;
+  place-items: center;
+  width: 20px;
+  height: 20px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.75);
+  color: var(--white);
+  cursor: pointer;
+}
+
+// Il microfono: rosso e pulsante mentre registra, con il tempo accanto.
+.mic.recording {
+  background: var(--danger);
+  color: var(--white);
+  animation: listening 1.4s ease-in-out infinite;
+
+  &:hover {
+    background: var(--danger);
+  }
+}
+
+.elapsed {
+  color: var(--danger);
+  font-size: 12px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+@keyframes listening {
+  50% {
+    box-shadow: 0 0 0 6px rgba(214, 69, 40, 0.18);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mic.recording {
+    animation: none;
+  }
+}

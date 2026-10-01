@@ -1,0 +1,77 @@
+<div class="composer">
+  @if (attachments().length > 0) {
+    <div class="pending">
+      @for (item of attachments(); track item.id) {
+        <div class="pending-photo" [class.failed]="item.failed">
+          @if (item.video) {
+            <video [src]="item.preview" muted playsinline preload="metadata"></video>
+          } @else {
+            <img [src]="item.preview" alt="" />
+          }
+          @if (!item.file && !item.failed) {
+            <span class="pending-state">
+              @if (item.video && item.progress < 1) {
+                <span class="pending-progress">{{ progressLabel(item.progress) }}</span>
+              } @else {
+                <span class="spinner"></span>
+              }
+            </span>
+          } @else if (item.video) {
+            <span class="pending-video"><mb-icon name="play" [size]="14" /></span>
+          }
+          <button class="pending-remove" type="button" [attr.aria-label]="item.video ? 'Togli il video' : 'Togli la foto'" (click)="unattach(item.id)">
+            <mb-icon name="x" [size]="12" [stroke]="3" />
+          </button>
+        </div>
+      }
+    </div>
+  }
+  <textarea
+    #field
+    class="composer-input"
+    rows="1"
+    [attr.aria-label]="label()"
+    [placeholder]="placeholder()"
+    [value]="draft()"
+    (input)="draft.set($any($event.target).value)"
+    (keydown)="keydown($event)"
+    (paste)="pasted($event)"
+  ></textarea>
+  <div class="composer-bar">
+    <input #picker type="file" accept="image/png,image/jpeg,image/webp,video/*" multiple hidden (change)="picked($event)" />
+    <button class="attach" type="button" title="Allega foto o video" (click)="pick()">
+      <mb-icon name="paperclip" [size]="16" [stroke]="1.8" /> Allega
+    </button>
+    <span class="grow"></span>
+    @if (dictation() === 'recording') {
+      <span class="elapsed" aria-live="polite">{{ elapsedLabel() }}</span>
+    }
+    <button
+      class="icon-btn mic"
+      type="button"
+      [class.recording]="dictation() === 'recording'"
+      [attr.aria-label]="dictation() === 'recording' ? 'Ferma e trascrivi' : dictation() === 'transcribing' ? 'Sto trascrivendo' : 'Detta a voce'"
+      [attr.title]="dictation() === 'recording' ? 'Ferma e trascrivi' : 'Detta a voce'"
+      [disabled]="dictation() === 'transcribing' || busy()"
+      (click)="toggleDictation()"
+    >
+      @if (dictation() === 'transcribing') {
+        <span class="spinner"></span>
+      } @else if (dictation() === 'recording') {
+        <mb-icon name="square" [size]="12" />
+      } @else {
+        <mb-icon name="mic" />
+      }
+    </button>
+    @if (running()) {
+      <button class="icon-btn solid send" type="button" aria-label="Ferma la risposta" title="Ferma la risposta" [disabled]="stopping()"
+        (click)="stopped.emit()">
+        <mb-icon name="square" [size]="14" />
+      </button>
+    } @else if (send()) {
+      <button class="icon-btn solid send" type="button" aria-label="Invia" [disabled]="!canSend()" (click)="submit()">
+        <mb-icon name="arrow-up" />
+      </button>
+    }
+  </div>
+</div>

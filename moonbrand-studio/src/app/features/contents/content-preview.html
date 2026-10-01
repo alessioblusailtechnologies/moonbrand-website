@@ -1,0 +1,247 @@
+@let current = content();
+@let who = author();
+
+@if (current.channels.length > 1) {
+  <div class="segmented channels" role="tablist" aria-label="Canale">
+    @for (item of current.channels; track item) {
+      <button type="button" role="tab" [attr.aria-selected]="channel() === item" [class.selected]="channel() === item" [disabled]="editing()"
+        (click)="channel.set(item)">
+        {{ name(item) }}
+      </button>
+    }
+  </div>
+}
+
+<div class="preview">
+  <div class="feed">
+    <article class="post" [attr.data-channel]="channel()" [attr.aria-label]="'Come appare su ' + (channel() ? name(channel()!) : '')">
+      @switch (channel()) {
+        @case ('tiktok') {
+          <div class="tiktok-stage">
+            <ng-container [ngTemplateOutlet]="media" />
+            <div class="tiktok-overlay">
+              <div class="tiktok-text">
+                <p class="who-name">{{ '@' + who.handle }}</p>
+                <ng-container [ngTemplateOutlet]="captionText" />
+                <p class="tiktok-sound"><mb-icon name="music" [size]="12" /> suono originale · {{ who.name }}</p>
+              </div>
+              <div class="tiktok-rail" aria-hidden="true">
+                <ng-container [ngTemplateOutlet]="avatar" [ngTemplateOutletContext]="{ size: 40 }" />
+                <mb-icon name="heart" [size]="26" />
+                <mb-icon name="message-circle" [size]="26" />
+                <mb-icon name="bookmark" [size]="26" />
+                <mb-icon name="share" [size]="26" />
+              </div>
+            </div>
+          </div>
+        }
+
+        @case ('instagram') {
+          <header class="post-head">
+            <ng-container [ngTemplateOutlet]="avatar" [ngTemplateOutletContext]="{ size: 32 }" />
+            <p class="who-name grow">{{ who.handle }}</p>
+            <span class="more-dots" aria-hidden="true">•••</span>
+          </header>
+          <ng-container [ngTemplateOutlet]="media" />
+          <div class="post-actions icons" aria-hidden="true">
+            <mb-icon name="heart" [size]="22" />
+            <mb-icon name="message-circle" [size]="22" />
+            <mb-icon name="send" [size]="22" />
+            <span class="grow"></span>
+            <mb-icon name="bookmark" [size]="22" />
+          </div>
+          <div class="post-text">
+            <ng-container [ngTemplateOutlet]="captionText" [ngTemplateOutletContext]="{ lead: who.handle }" />
+          </div>
+        }
+
+        @case ('x') {
+          <div class="x-row">
+            <ng-container [ngTemplateOutlet]="avatar" [ngTemplateOutletContext]="{ size: 40 }" />
+            <div class="x-body">
+              <p class="x-head"><span class="who-name">{{ who.name }}</span> <span class="who-meta">{{ '@' + who.handle }} · adesso</span></p>
+              <ng-container [ngTemplateOutlet]="captionText" />
+              <ng-container [ngTemplateOutlet]="media" />
+              <div class="post-actions icons spread" aria-hidden="true">
+                <mb-icon name="message-circle" [size]="17" />
+                <mb-icon name="repeat" [size]="17" />
+                <mb-icon name="heart" [size]="17" />
+                <mb-icon name="bookmark" [size]="17" />
+                <mb-icon name="share" [size]="17" />
+              </div>
+            </div>
+          </div>
+        }
+
+        @default {
+          <!-- LinkedIn e Facebook: chi pubblica, il testo sopra, le immagini a tutta larghezza, le azioni con le parole. -->
+          <header class="post-head">
+            <ng-container [ngTemplateOutlet]="avatar" [ngTemplateOutletContext]="{ size: channel() === 'linkedin' ? 48 : 40 }" />
+            <div class="grow">
+              <p class="who-name">{{ who.name }}</p>
+              <p class="who-meta">{{ channel() === 'linkedin' ? (who.person ? 'Adesso' : 'Pagina · adesso') : 'Adesso' }}</p>
+            </div>
+            @if (channel() === 'linkedin') {
+              <span class="follow">+ Segui</span>
+            } @else {
+              <span class="more-dots" aria-hidden="true">•••</span>
+            }
+          </header>
+          <div class="post-text">
+            <ng-container [ngTemplateOutlet]="captionText" />
+          </div>
+          @if (current.format === 'article' && channel() === 'linkedin') {
+            <div class="article-card">
+              <ng-container [ngTemplateOutlet]="media" />
+              <div class="article-meta">
+                <p class="article-title">{{ current.visual.headline || current.title }}</p>
+                <p class="who-meta">Articolo · {{ who.name }}</p>
+              </div>
+            </div>
+          } @else {
+            <ng-container [ngTemplateOutlet]="media" />
+          }
+          <div class="post-actions words" aria-hidden="true">
+            @if (channel() === 'linkedin') {
+              <span><mb-icon name="thumbs-up" [size]="16" /> Consiglia</span>
+              <span><mb-icon name="message-circle" [size]="16" /> Commenta</span>
+              <span><mb-icon name="repeat" [size]="16" /> Diffondi il post</span>
+              <span><mb-icon name="send" [size]="16" /> Invia</span>
+            } @else {
+              <span><mb-icon name="thumbs-up" [size]="16" /> Mi piace</span>
+              <span><mb-icon name="message-circle" [size]="16" /> Commenta</span>
+              <span><mb-icon name="share" [size]="16" /> Condividi</span>
+            }
+          </div>
+        }
+      }
+    </article>
+  </div>
+
+  @if (variant(); as text) {
+    <div class="panel text">
+      <div class="text-head">
+        <p class="label">Testo per {{ name(text.channel) }}</p>
+        <span class="count" [class.over]="count() > limit()" [attr.aria-label]="count() + ' caratteri su ' + limit()">
+          {{ digits(count()) }} / {{ digits(limit()) }}
+        </span>
+      </div>
+
+      @if (editing()) {
+        <textarea class="sunken editor" rows="10" aria-label="Il testo del post" [value]="draftText()" [disabled]="saving()"
+          (input)="draftText.set($any($event.target).value)"></textarea>
+        <input class="sunken" aria-label="Hashtag" placeholder="#hashtag #altro" [value]="draftTags()" [disabled]="saving()"
+          (input)="draftTags.set($any($event.target).value)" />
+        <p class="caption">
+          Su {{ name(text.channel) }} al massimo {{ maxTags() }} hashtag{{ extraTags() > 0 ? ': tengo i primi ' + maxTags() + '.' : '.' }}
+          @if (count() > limit()) {
+            <span class="over">Il testo supera i caratteri che il canale accetta.</span>
+          }
+        </p>
+        <div class="edit-actions">
+          <button class="btn btn-secondary btn-sm" type="button" [disabled]="saving()" (click)="editing.set(false)">Annulla</button>
+          <button class="btn btn-primary btn-sm" type="button" [disabled]="saving() || !draftText().trim()" (click)="saveEdit()">
+            {{ saving() ? 'Salvo…' : 'Salva il testo' }}
+          </button>
+        </div>
+      } @else {
+        <p class="body ink full">{{ text.text }}</p>
+        @if (text.hashtags.length > 0) {
+          <p class="caption hashtags">{{ text.hashtags.join(' ') }}</p>
+        }
+        @if (count() > limit()) {
+          <p class="caption over">Il testo supera i {{ digits(limit()) }} caratteri che {{ name(text.channel) }} accetta.</p>
+        }
+        <div class="text-tools">
+          <button class="link-btn" type="button" (click)="copy()">Copia testo</button>
+          @if (editable()) {
+            <button class="link-btn" type="button" (click)="startEdit()">Modifica</button>
+          }
+          @if (document(); as pdf) {
+            <a class="link-btn with-icon" [href]="pdf.url" download><mb-icon name="download" [size]="14" /> Scarica il PDF per LinkedIn</a>
+          }
+        </div>
+      }
+    </div>
+  }
+</div>
+
+<!-- Il logo del brand o la sua iniziale: tondo per le persone, quadrato arrotondato per le aziende su LinkedIn. -->
+<ng-template #avatar let-size="size">
+  <span class="avatar" [class.square]="channel() === 'linkedin' && !who.person" [class.ring]="channel() === 'instagram'"
+    [style.width.px]="size" [style.height.px]="size" [style.background]="who.logo ? 'var(--white)' : who.color" aria-hidden="true">
+    @if (who.logo) {
+      <img [src]="who.logo" alt="" />
+    } @else {
+      {{ who.initial }}
+    }
+  </span>
+</ng-template>
+
+<!-- Il testo nella cornice; lead è il nome in grassetto davanti, come nelle didascalie di Instagram. -->
+<ng-template #captionText let-lead="lead">
+  @let shown = caption();
+  <p class="caption-text">
+    @if (lead) {
+      <span class="who-name">{{ lead }}</span>
+    }
+    @for (part of shown.parts; track $index) {
+      @if (part.tag) {
+        <span class="tag">{{ part.text }}</span>
+      } @else {
+        {{ part.text }}
+      }
+    }
+    @if (shown.folded) {
+      <button class="fold" type="button" (click)="expanded.set(true)">{{ channel() === 'facebook' ? '… Altro' : '…altro' }}</button>
+    }
+  </p>
+</ng-template>
+
+<!-- Le immagini o il video nella proporzione del canale: lo slider per il carosello, con la barra del documento su LinkedIn. -->
+<ng-template #media>
+  <div class="media">
+    @if (video(); as clip) {
+      <video class="clip" [src]="clip.file.url" [attr.poster]="clip.poster" [style.aspect-ratio]="cssAspect(clip.file.aspect)" controls
+        playsinline preload="metadata"></video>
+    } @else if (images().length > 1) {
+      @if (channel() === 'linkedin') {
+        <p class="doc-bar">{{ current.visual.headline || current.title }} · {{ images().length }} pagine</p>
+      }
+      <div class="slider" tabindex="0" role="region" aria-roledescription="carosello" aria-label="Slide del carosello"
+        (keydown.arrowleft)="move(-1)" (keydown.arrowright)="move(1)" (pointerdown)="dragStart($event)" (pointerup)="dragEnd($event)"
+        (pointercancel)="dragFrom = null">
+        <div class="track" [style.transform]="'translateX(' + -slide() * 100 + '%)'">
+          @for (file of images(); track file.file; let i = $index) {
+            <button class="shot slide" type="button" [style.aspect-ratio]="cssAspect(file.aspect)" [attr.aria-hidden]="i !== slide()"
+              [attr.tabindex]="i === slide() ? 0 : -1" [attr.aria-label]="'Slide ' + (i + 1) + ' di ' + images().length + ': ingrandisci'"
+              (click)="openSlide(i)">
+              <img [src]="file.url" [alt]="'Slide ' + (i + 1)" draggable="false" />
+            </button>
+          }
+        </div>
+        <button class="nav prev" type="button" aria-label="Slide precedente" [disabled]="slide() === 0" (click)="move(-1)">
+          <mb-icon name="chevron-left" [size]="18" />
+        </button>
+        <button class="nav next" type="button" aria-label="Slide successiva" [disabled]="slide() === images().length - 1" (click)="move(1)">
+          <mb-icon name="chevron-right" [size]="18" />
+        </button>
+        <span class="counter">{{ slide() + 1 }} / {{ images().length }}</span>
+      </div>
+      @if (channel() !== 'linkedin') {
+        <div class="dots" role="tablist" aria-label="Vai alla slide">
+          @for (file of images(); track file.file; let i = $index) {
+            <button class="dot" type="button" role="tab" [attr.aria-selected]="i === slide()" [attr.aria-label]="'Slide ' + (i + 1)"
+              [class.on]="i === slide()" (click)="slide.set(i)"></button>
+          }
+        </div>
+      }
+    } @else {
+      @for (file of images(); track file.file) {
+        <button class="shot" type="button" [style.aspect-ratio]="cssAspect(file.aspect)" aria-label="Ingrandisci l’immagine" (click)="open(0)">
+          <img [src]="file.url" alt="Immagine del contenuto" />
+        </button>
+      }
+    }
+  </div>
+</ng-template>

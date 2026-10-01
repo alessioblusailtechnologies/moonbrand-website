@@ -1,0 +1,103 @@
+---
+import { sectors, brandCounts } from '../data/home';
+---
+
+<section id="prova" class="trial" data-screen-label="Form prova">
+  <div class="inner">
+    <div class="head">
+      <h2 class="display">Inizia la prova gratuita</h2>
+      <p>Ci servono due informazioni per preparare il tuo spazio.</p>
+    </div>
+
+    <form class="form" data-trial-form>
+      <div class="pair">
+        <label>Nome<input name="nome" autocomplete="given-name" required /></label>
+        <label>Cognome<input name="cognome" autocomplete="family-name" required /></label>
+      </div>
+      <label>Email di lavoro<input type="email" name="email" autocomplete="email" required /></label>
+      <label>Nome del brand o dell’attività<input name="brand" data-brand-input /></label>
+      <div class="pair">
+        <label>Settore
+          <select name="settore">{sectors.map((s) => <option>{s}</option>)}</select>
+        </label>
+        <label>Quanti brand gestisci?
+          <select name="brand_count">{brandCounts.map((c) => <option>{c}</option>)}</select>
+        </label>
+      </div>
+      <label class="consent"><input type="checkbox" name="privacy" required />Accetto l’informativa privacy e di ricevere comunicazioni su Moonbrand.</label>
+      <button type="submit">Continua</button>
+    </form>
+
+    <div class="done" data-trial-done hidden>
+      <span class="done-title">Fatto, ci siamo quasi.</span>
+      <span class="done-text">Ti abbiamo mandato un’email per attivare lo spazio<span data-brand-suffix></span>.</span>
+    </div>
+  </div>
+</section>
+
+<script>
+  const brandInputs = document.querySelectorAll<HTMLInputElement>('[data-brand-input]');
+  const suffix = document.querySelector<HTMLElement>('[data-brand-suffix]')!;
+  const form = document.querySelector<HTMLFormElement>('[data-trial-form]')!;
+  const done = document.querySelector<HTMLElement>('[data-trial-done]')!;
+
+  // Il nome del brand scritto nell'hero e nel form resta lo stesso nei due campi.
+  brandInputs.forEach((input) =>
+    input.addEventListener('input', () => {
+      brandInputs.forEach((other) => other !== input && (other.value = input.value));
+    }),
+  );
+
+  form.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const brand = brandInputs[0]?.value.trim() ?? '';
+    suffix.textContent = brand ? ` di ${brand}` : '';
+    form.hidden = true;
+    done.hidden = false;
+  });
+</script>
+
+<style>
+  .trial { padding: 0 24px clamp(96px, 11vw, 140px); }
+  .inner { max-width: 620px; margin: 0 auto; display: flex; flex-direction: column; gap: 32px; }
+  .head { display: flex; flex-direction: column; align-items: center; gap: 12px; text-align: center; }
+  h2 { font-size: clamp(36px, 4.4vw, 56px); }
+  .head p { margin: 0; font-size: 16px; color: var(--muted); }
+
+  .form { display: flex; flex-direction: column; gap: 18px; }
+  .pair { display: flex; gap: 14px; flex-wrap: wrap; }
+  .pair label { flex: 1 1 220px; }
+  label { display: flex; flex-direction: column; gap: 6px; font-size: 13.5px; font-weight: 500; }
+  input:not([type='checkbox']),
+  select {
+    height: 44px;
+    border: 1px solid #DDDBD5;
+    border-radius: 10px;
+    padding: 0 12px;
+    font-family: inherit;
+    font-size: 15px;
+    background: #fff;
+    color: var(--ink);
+  }
+  select { padding: 0 10px; }
+  input:focus-visible,
+  select:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+  .consent { flex-direction: row; gap: 10px; align-items: flex-start; font-size: 13px; font-weight: 400; line-height: 1.5; color: var(--muted); }
+  .consent input { margin-top: 3px; }
+  button {
+    height: 50px;
+    border: 0;
+    border-radius: 10px;
+    background: var(--ink);
+    color: #fff;
+    font-family: inherit;
+    font-size: 15.5px;
+    font-weight: 600;
+    cursor: pointer;
+  }
+  button:hover { background: var(--ink-hover); }
+
+  .done { background: var(--accent-soft); border-radius: 16px; padding: 32px; text-align: center; display: flex; flex-direction: column; gap: 8px; }
+  .done-title { font-size: 20px; font-weight: 600; }
+  .done-text { font-size: 15px; color: #5C4A33; }
+</style>

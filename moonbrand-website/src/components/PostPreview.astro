@@ -1,0 +1,346 @@
+---
+import type { ExamplePost } from '../data/home';
+import Icon from './Icon.astro';
+import PostMedia from './PostMedia.astro';
+
+interface Props {
+  post: ExamplePost;
+}
+
+const { post: p } = Astro.props;
+const vertical = p.channel === 'reel' || p.channel === 'story' || p.channel === 'tiktok';
+---
+
+<div class:list={['post', p.channel, { vertical }]}>
+  {(p.channel === 'instagram' || p.channel === 'carousel') && (
+    <>
+      <div class="ig-head">
+        <span class="avatar ring"><span class="mono" style={`background:${p.color}`}>{p.initials}</span></span>
+        <div class="who">
+          <span class="handle">{p.handle}</span>
+          {p.sub && <span class="sub">{p.sub}</span>}
+        </div>
+        <Icon name="more" size={20} />
+      </div>
+      <PostMedia post={p}>
+        {p.slides && <span class="counter">1/{p.slides}</span>}
+      </PostMedia>
+      <div class="ig-actions">
+        <Icon name="heart" size={24} />
+        <Icon name="comment" size={23} />
+        <Icon name="send" size={23} />
+        {p.slides && (
+          <span class="dots">
+            {Array.from({ length: p.slides }, (_, i) => <span class:list={{ on: i === 0 }} />)}
+          </span>
+        )}
+        <Icon name="bookmark" size={23} class="push" />
+      </div>
+      <div class="ig-body">
+        <strong>Piace a {p.likes} persone</strong>
+        <span><strong>{p.handle}</strong> {p.text}</span>
+        <span class="muted">Mostra tutti e {p.comments} i commenti</span>
+        <span class="time">{p.time}</span>
+      </div>
+    </>
+  )}
+
+  {p.channel === 'reel' && (
+    <PostMedia post={p} immersive>
+      <div class="overlay top-bar">
+        <strong>Reels</strong>
+        <Icon name="camera" size={22} />
+      </div>
+      <div class="overlay side">
+        <span><Icon name="heart" size={26} />{p.likes}</span>
+        <span><Icon name="comment" size={25} />{p.comments}</span>
+        <span><Icon name="send" size={25} />{p.shares}</span>
+        <Icon name="more" size={22} />
+        <span class="cover" style={`background:${p.color}`} />
+      </div>
+      <div class="overlay bottom">
+        <div class="author">
+          <span class="avatar small mono" style={`background:${p.color}`}>{p.initials}</span>
+          <strong>{p.handle}</strong>
+          <span class="follow">Segui</span>
+        </div>
+        <span class="caption">{p.text}</span>
+        <span class="audio"><Icon name="music" size={13} />{p.audio}</span>
+      </div>
+    </PostMedia>
+  )}
+
+  {p.channel === 'story' && (
+    <PostMedia post={p} immersive>
+      <div class="overlay story-top">
+        <div class="bars"><span class="full" /><span class="half" /><span /></div>
+        <div class="author">
+          <span class="avatar small mono" style={`background:${p.color}`}>{p.initials}</span>
+          <strong>{p.handle}</strong>
+          <span class="faded">{p.time}</span>
+          <Icon name="more" size={20} class="push" />
+          <Icon name="close" size={22} />
+        </div>
+      </div>
+      {p.poll && (
+        <div class="overlay poll">
+          <span class="poll-q">{p.text}</span>
+          <span class="poll-opt">{p.poll[0]}</span>
+          <span class="poll-opt">{p.poll[1]}</span>
+        </div>
+      )}
+      <div class="overlay story-bottom">
+        <span class="reply">Invia messaggio</span>
+        <Icon name="heart" size={24} />
+        <Icon name="send" size={24} />
+      </div>
+    </PostMedia>
+  )}
+
+  {p.channel === 'tiktok' && (
+    <PostMedia post={p} immersive>
+      <div class="overlay tt-top">
+        <span class="faded">Seguiti</span>
+        <strong class="tt-tab">Per te</strong>
+        <Icon name="search" size={20} class="tt-search" />
+      </div>
+      <div class="overlay side">
+        <span class="tt-avatar">
+          <span class="avatar mono" style={`background:${p.color}`}>{p.initials}</span>
+          <span class="tt-plus"><Icon name="plus" size={10} /></span>
+        </span>
+        <span><Icon name="heart" size={28} fill />{p.likes}</span>
+        <span><Icon name="comment" size={26} fill />{p.comments}</span>
+        <span><Icon name="bookmark" size={25} fill />{p.shares}</span>
+        <span><Icon name="share" size={26} />Condividi</span>
+        <span class="disc" style={`background:${p.color}`} />
+      </div>
+      <div class="overlay bottom">
+        <strong>{p.name}</strong>
+        <span class="caption">{p.text}</span>
+        <span class="audio"><Icon name="music" size={13} />{p.audio}</span>
+      </div>
+    </PostMedia>
+  )}
+
+  {p.channel === 'facebook' && (
+    <>
+      <div class="fb-head">
+        <span class="avatar big mono" style={`background:${p.color}`}>{p.initials}</span>
+        <div class="who">
+          <strong>{p.name}</strong>
+          <span class="sub">{p.time} · <Icon name="globe" size={11} /></span>
+        </div>
+        <Icon name="more" size={20} />
+        <Icon name="close" size={20} />
+      </div>
+      <p class="fb-text">{p.text}</p>
+      <PostMedia post={p} />
+      <div class="fb-stats">
+        <span class="reactions">
+          <span class="react like"><Icon name="thumb" size={10} fill /></span>
+          <span class="react love"><Icon name="heart" size={10} fill /></span>
+          {p.likes}
+        </span>
+        <span>{p.comments} commenti · {p.shares} condivisioni</span>
+      </div>
+      <div class="fb-actions">
+        <span><Icon name="thumb" size={18} />Mi piace</span>
+        <span><Icon name="comment" size={18} />Commenta</span>
+        <span><Icon name="share" size={18} />Condividi</span>
+      </div>
+    </>
+  )}
+
+  {p.channel === 'linkedin' && (
+    <>
+      <div class="li-head">
+        <span class="avatar square mono" style={`background:${p.color}`}>{p.initials}</span>
+        <div class="who">
+          <strong>{p.name}</strong>
+          <span class="sub">{p.sub}</span>
+          <span class="sub">{p.time} · <Icon name="globe" size={11} /></span>
+        </div>
+        <span class="li-follow"><Icon name="plus" size={16} />Segui</span>
+      </div>
+      <p class="li-text">{p.text}</p>
+      <PostMedia post={p} />
+      <div class="li-stats">
+        <span class="reactions">
+          <span class="react li-like"><Icon name="thumb" size={10} fill /></span>
+          <span class="react love"><Icon name="heart" size={10} fill /></span>
+          {p.likes}
+        </span>
+        <span>{p.comments} commenti · {p.shares} diffusioni</span>
+      </div>
+      <div class="li-actions">
+        <span><Icon name="thumb" size={18} />Consiglia</span>
+        <span><Icon name="comment" size={18} />Commenta</span>
+        <span><Icon name="repost" size={18} />Diffondi</span>
+        <span><Icon name="send" size={18} />Invia</span>
+      </div>
+    </>
+  )}
+</div>
+
+<style>
+  .post {
+    background: #fff;
+    border: 1px solid #E9E8E4;
+    border-radius: 14px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    font-size: 13.5px;
+    color: #0F1419;
+  }
+  .post.vertical { border: 0; background: #111; color: #fff; }
+  .who { display: flex; flex-direction: column; min-width: 0; flex: 1; line-height: 1.3; }
+  .sub { font-size: 11.5px; color: #65676B; display: inline-flex; align-items: center; gap: 3px; }
+  .muted { color: #737373; }
+  .faded { opacity: 0.75; font-weight: 400; }
+  .post :global(.push) { margin-left: auto; }
+
+  .avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: grid;
+    place-items: center;
+    flex-shrink: 0;
+    color: #fff;
+    font-size: 9px;
+  }
+  .avatar.small { width: 28px; height: 28px; font-size: 8px; }
+  .avatar.big { width: 40px; height: 40px; font-size: 11px; }
+  .avatar.square { width: 48px; height: 48px; border-radius: 6px; font-size: 12px; }
+  .ring { padding: 2px; background: conic-gradient(from 200deg, #F29A2E, #D62976, #962FBF, #F29A2E); }
+  .ring > span {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    display: grid;
+    place-items: center;
+    border: 2px solid #fff;
+  }
+
+  /* Instagram */
+  .ig-head { display: flex; align-items: center; gap: 10px; padding: 10px 12px; }
+  .handle { font-weight: 600; }
+  .counter {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    font-size: 11.5px;
+    background: rgba(0, 0, 0, 0.6);
+    color: #fff;
+    border-radius: 999px;
+    padding: 3px 8px;
+  }
+  .ig-actions { display: flex; align-items: center; gap: 14px; padding: 10px 12px 6px; position: relative; }
+  .dots { position: absolute; left: 50%; transform: translateX(-50%); display: flex; gap: 4px; }
+  .dots span { width: 6px; height: 6px; border-radius: 50%; background: #C7C7C7; }
+  .dots span.on { background: #0095F6; }
+  .ig-body { display: flex; flex-direction: column; gap: 4px; padding: 0 12px 14px; line-height: 1.45; }
+  .ig-body strong { font-weight: 600; }
+  .time { font-size: 10.5px; color: #737373; text-transform: uppercase; letter-spacing: 0.02em; margin-top: 2px; }
+
+  /* Formati verticali: interfaccia sopra al media */
+  .overlay { position: absolute; z-index: 1; display: flex; }
+  .author { display: flex; align-items: center; gap: 8px; font-size: 13px; }
+  .top-bar { top: 12px; left: 14px; right: 14px; justify-content: space-between; align-items: center; font-size: 17px; }
+  .side { right: 10px; bottom: 16px; flex-direction: column; align-items: center; gap: 16px; font-size: 11.5px; }
+  .side > span { display: flex; flex-direction: column; align-items: center; gap: 3px; }
+  .cover { width: 26px; height: 26px; border-radius: 6px; border: 2px solid #fff; }
+  .bottom { left: 12px; right: 64px; bottom: 16px; flex-direction: column; gap: 7px; font-size: 13px; line-height: 1.4; }
+  .follow { border: 1px solid rgba(255, 255, 255, 0.8); border-radius: 7px; padding: 2px 9px; font-size: 12px; font-weight: 600; }
+  .caption { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+  .audio { display: flex; align-items: center; gap: 6px; font-size: 12px; white-space: nowrap; overflow: hidden; }
+
+  .story-top { top: 8px; left: 10px; right: 10px; flex-direction: column; gap: 10px; }
+  .bars { display: flex; gap: 3px; }
+  .bars span { flex: 1; height: 2.5px; border-radius: 2px; background: rgba(255, 255, 255, 0.4); }
+  .bars .full { background: #fff; }
+  .bars .half { background: linear-gradient(90deg, #fff 45%, rgba(255, 255, 255, 0.4) 45%); }
+  .poll {
+    left: 12%;
+    right: 12%;
+    top: 72%;
+    transform: translateY(-50%) rotate(-2deg);
+    flex-direction: column;
+    gap: 8px;
+    background: #fff;
+    color: #0F1419;
+    border-radius: 14px;
+    padding: 14px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+  }
+  .poll-q { font-weight: 600; font-size: 14px; line-height: 1.35; text-align: center; }
+  .poll-opt { border: 1px solid #E4E4E4; border-radius: 10px; padding: 8px; text-align: center; font-weight: 600; color: #0095F6; }
+  .story-bottom { left: 10px; right: 10px; bottom: 14px; align-items: center; gap: 12px; }
+  .reply { flex: 1; border: 1px solid rgba(255, 255, 255, 0.75); border-radius: 999px; padding: 9px 14px; font-size: 13px; }
+
+  .tt-top { top: 14px; left: 0; right: 0; justify-content: center; gap: 16px; font-size: 14.5px; }
+  .tt-tab { border-bottom: 2px solid #fff; padding-bottom: 4px; }
+  .tt-top :global(.tt-search) { position: absolute; right: 14px; }
+  .tt-avatar { position: relative; margin-bottom: 8px; }
+  .tt-avatar .avatar { width: 40px; height: 40px; border: 1.5px solid #fff; }
+  .tt-plus {
+    position: absolute;
+    left: 50%;
+    bottom: -8px;
+    transform: translateX(-50%);
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: #FE2C55;
+    display: grid;
+    place-items: center;
+  }
+  .disc { width: 32px; height: 32px; border-radius: 50%; border: 7px solid #2A2A2A; }
+
+  /* Facebook */
+  .fb-head, .li-head { display: flex; align-items: center; gap: 10px; padding: 12px 12px 8px; color: #65676B; }
+  .fb-head strong, .li-head strong { color: #050505; font-weight: 600; }
+  .fb-text, .li-text { margin: 0; padding: 0 12px 12px; font-size: 14px; line-height: 1.45; }
+  .fb-stats, .li-stats {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 12px;
+    font-size: 12.5px;
+    color: #65676B;
+  }
+  .reactions { display: flex; align-items: center; gap: 0; }
+  .react {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    display: grid;
+    place-items: center;
+    color: #fff;
+    border: 2px solid #fff;
+    margin-right: -4px;
+  }
+  .react:last-of-type { margin-right: 5px; }
+  .like { background: #1877F2; }
+  .love { background: #F33E58; }
+  .li-like { background: #378FE9; }
+  .fb-actions, .li-actions {
+    display: flex;
+    justify-content: space-around;
+    border-top: 1px solid #E4E6EB;
+    margin: 0 12px;
+    padding: 6px 0 8px;
+    font-size: 13px;
+    font-weight: 600;
+    color: #65676B;
+  }
+  .fb-actions span, .li-actions span { display: flex; align-items: center; gap: 6px; padding: 6px 4px; }
+
+  /* LinkedIn */
+  .li-head { align-items: flex-start; }
+  .li-follow { display: flex; align-items: center; gap: 4px; color: #0A66C2; font-weight: 600; font-size: 14px; }
+  .li-actions { font-size: 12px; }
+  .li-actions span { flex-direction: column; gap: 2px; }
+</style>

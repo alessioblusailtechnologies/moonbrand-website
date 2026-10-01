@@ -1,0 +1,147 @@
+@let value = visual();
+
+<section class="panel">
+  <p class="label">Logo</p>
+  <div class="row">
+    <span class="logo-box" [class.empty]="!value.logoUri" [mbLogoBackdrop]="value.logoUri">
+      @if (value.logoUri) {
+        <img [src]="value.logoUri" alt="Logo" />
+      } @else {
+        <mb-icon name="image-plus" [size]="20" />
+      }
+    </span>
+    <div class="grow">
+      <p class="strong-sm">{{ value.logoUri ? 'Logo caricato' : 'Nessun logo' }}</p>
+      <p class="caption">{{ value.logoUri ? 'Lo uso in piccolo sulle card.' : 'SVG o PNG con sfondo trasparente, almeno 512px.' }}</p>
+    </div>
+    <label class="btn btn-secondary btn-sm">
+      {{ value.logoUri ? 'Sostituisci' : 'Carica' }}
+      <input type="file" accept="image/png,image/jpeg,image/webp,image/svg+xml" hidden (change)="pickLogo($event)" />
+    </label>
+  </div>
+  @if (value.logoUri) {
+    <label class="row switch-row">
+      <span class="grow">
+        <span class="strong-sm">Logo sulle card</span>
+        <span class="caption block">In piccolo accanto alla firma, in basso</span>
+      </span>
+      <input class="switch" type="checkbox" role="switch" [checked]="value.signature" (change)="set({ signature: $any($event.target).checked })" />
+    </label>
+    <button class="link-btn muted" type="button" (click)="set({ logoUri: null })">Rimuovi il logo</button>
+  }
+</section>
+
+<section class="panel">
+  <p class="label">Palette</p>
+  @if (sitePalette(); as site) {
+    <button class="palette-option" type="button" role="radio" [attr.aria-checked]="!custom()" [class.selected]="!custom()" (click)="chooseSitePalette()">
+      <span class="swatches">
+        @for (color of site.colors; track $index) {
+          <span [style.background]="color"></span>
+        }
+      </span>
+      <span class="grow action">Dal sito · {{ store.insights()?.site ?? 'letto prima' }}</span>
+      <span class="radio-mark" [class.on]="!custom()"></span>
+    </button>
+    <button class="palette-option" type="button" role="radio" [attr.aria-checked]="custom()" [class.selected]="custom()" (click)="chooseCustom()">
+      @if (custom()) {
+        <span class="swatches">
+          @for (color of value.palette.colors; track $index) {
+            <span [style.background]="color"></span>
+          }
+        </span>
+      } @else {
+        <span class="custom-icon"><mb-icon name="plus" [size]="14" /></span>
+      }
+      <span class="grow action">Usa i miei colori</span>
+      <span class="radio-mark" [class.on]="custom()"></span>
+    </button>
+  } @else {
+    <p class="caption">Scrivi i colori del marchio: li uso su tutte le card.</p>
+  }
+  @if (custom()) {
+    <div class="slots">
+      @for (label of slotLabels; track label; let i = $index) {
+        <label class="slot">
+          <input class="picker" type="color" [value]="value.palette.colors[i]" [attr.aria-label]="'Scegli il colore ' + label"
+            (input)="editHex(i, $any($event.target).value)" />
+          <span class="caption slot-label">{{ label }}</span>
+          <input class="sunken" maxlength="7" [attr.aria-label]="'Colore ' + label" [value]="hexDrafts()[i] ?? ''"
+            (input)="editHex(i, $any($event.target).value)" />
+        </label>
+      }
+    </div>
+  }
+</section>
+
+<section class="panel">
+  <p class="label">Immagini di riferimento</p>
+  <p class="caption">Post, foto o grafiche che ti piacciono, anche di altri. Ne ricavo caratteri, forme e stile delle foto.</p>
+  <div class="references">
+    @for (file of references(); track file.path ?? file.url; let i = $index) {
+      <div class="reference">
+        <button class="zoom" type="button" [attr.aria-label]="'Ingrandisci il riferimento ' + (i + 1)" (click)="openReference(i)">
+          <img [src]="file.url" [alt]="'Riferimento ' + (i + 1)" />
+        </button>
+        <button class="icon-btn solid remove" type="button" [attr.aria-label]="'Togli il riferimento ' + (i + 1)" (click)="removeReference(file)">
+          <mb-icon name="x" [size]="12" [stroke]="3" />
+        </button>
+      </div>
+    }
+    @for (slot of placeholders(); track slot) {
+      <div class="reference empty"><span class="spinner"></span></div>
+    }
+    @if (references().length + uploading() < maxReferences) {
+      <label class="reference empty add" aria-label="Aggiungi immagini di riferimento">
+        <mb-icon name="plus" />
+        <input type="file" accept="image/png,image/jpeg,image/webp" multiple hidden (change)="pickReferences($event)" />
+      </label>
+    }
+  </div>
+</section>
+
+<section class="panel">
+  <p class="label">Esempi di post</p>
+  @if (preparing()) {
+    <mb-step-list [steps]="steps()" waiting="Guardo i riferimenti" />
+    <mb-pending-media [tiles]="pending(steps())" />
+  } @else if (examples().length > 0) {
+    <p class="caption">{{ selectedCount() }} di {{ examples().length }} scelti: tocca il segno di spunta per togliere o rimettere un esempio.</p>
+    <div class="masonry">
+      @for (example of examples(); track example.file; let i = $index) {
+        <figure class="example" [class.off]="!example.selected">
+          <div class="shot">
+            <button class="zoom" type="button" [attr.aria-label]="'Ingrandisci l’esempio ' + (i + 1) + ' per ' + example.name" (click)="openExample(i)">
+              <img [src]="example.url" [alt]="'Esempio per ' + example.name" loading="lazy" />
+            </button>
+            <span class="channel-chip">{{ example.name }}</span>
+            <button class="pick" type="button" role="checkbox" [attr.aria-checked]="example.selected"
+              [attr.aria-label]="'Scegli l’esempio ' + (i + 1) + ' per ' + example.name" (click)="store.toggleExample(example.file)">
+              @if (example.selected) {
+                <mb-icon name="check" [size]="14" [stroke]="3" />
+              }
+            </button>
+          </div>
+          <figcaption class="body">{{ example.caption }}</figcaption>
+        </figure>
+      }
+    </div>
+  } @else {
+    <p class="caption">
+      Carica qualche immagine che ti piace e, se vuoi, scrivi come vuoi apparire: preparo due esempi di post, uno per ciascuno dei primi due canali scelti.
+    </p>
+  }
+
+  <div class="row">
+    <input class="sunken grow" aria-label="Indicazioni sullo stile" [value]="notes()" (input)="notes.set($any($event.target).value)"
+      (keydown.enter)="sendNotes()" [placeholder]="examples().length > 0 ? 'Cosa cambio? es. titoli più grandi, più foto' : 'Indicazioni, es. fondo chiaro, titoli con le grazie'" />
+    <button class="icon-btn solid" type="button" aria-label="Invia le indicazioni" [disabled]="preparing() || !notes().trim()" (click)="sendNotes()">
+      <mb-icon name="arrow-up" />
+    </button>
+  </div>
+  @if (!preparing()) {
+    <button class="btn btn-secondary btn-sm align-center" type="button" (click)="createExamples()">
+      {{ examples().length > 0 ? 'Rigenera gli esempi da zero' : 'Prepara gli esempi' }}
+    </button>
+  }
+</section>

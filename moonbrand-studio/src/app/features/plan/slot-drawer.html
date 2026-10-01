@@ -1,0 +1,137 @@
+@let current = slot();
+
+<div class="backdrop" (click)="saving() || closed.emit()"></div>
+<aside class="sheet" role="dialog" aria-modal="true" aria-labelledby="slot-title">
+  <header class="sheet-head">
+    <div class="titles">
+      @if (current) {
+        <span class="status" [style.--tone]="tones[current.status]">{{ statusLabels[current.status] }}</span>
+      }
+      <h2 id="slot-title" class="sheet-title">{{ heading() }}</h2>
+      @if (when()) {
+        <p class="caption">{{ when() }}{{ time() ? ' alle ' + time() : '' }}</p>
+      }
+    </div>
+    <button class="icon-btn" type="button" aria-label="Chiudi" [disabled]="saving()" (click)="closed.emit()">
+      <mb-icon name="x" />
+    </button>
+  </header>
+
+  <div class="sheet-body">
+    @if (creating()) {
+      <label class="field-line">
+        <span class="label">Cosa esce</span>
+        <select class="sunken" (change)="chooseWhat($any($event.target).value)">
+          <option value="empty" [selected]="whatValue() === 'empty'">Da decidere: lascio il posto</option>
+          @if (plan().ideas.length > 0) {
+            <optgroup label="Un’idea salvata">
+              @for (idea of plan().ideas; track idea.id) {
+                <option [value]="'idea:' + idea.id" [selected]="whatValue() === 'idea:' + idea.id">{{ idea.title }}</option>
+              }
+            </optgroup>
+          }
+          @if (plan().unscheduled.length > 0) {
+            <optgroup label="Un contenuto senza data">
+              @for (item of plan().unscheduled; track item.id) {
+                <option [value]="'content:' + item.id" [selected]="whatValue() === 'content:' + item.id">{{ item.title }}</option>
+              }
+            </optgroup>
+          }
+        </select>
+      </label>
+    }
+
+    @if (content(); as item) {
+      <a class="content-card" [routerLink]="['/contenuti', item.id]">
+        <span class="thumb">
+          @if (item.coverUrl) {
+            <img [src]="item.coverUrl" alt="" />
+          }
+        </span>
+        <span class="content-texts">
+          <span class="strong-sm">{{ item.title }}</span>
+          <span class="caption">{{ formatLabels[item.format] }} · {{ item.status === 'approved' ? 'Approvato' : 'Bozza da approvare' }}</span>
+        </span>
+        <mb-icon name="chevron-right" [size]="16" />
+      </a>
+    }
+
+    <div class="when">
+      <label class="field-line">
+        <span class="label">Giorno</span>
+        <input class="sunken" type="date" [min]="today" [value]="date()" [disabled]="locked()" (change)="date.set($any($event.target).value)" />
+      </label>
+      <label class="field-line">
+        <span class="label">Ora</span>
+        <input class="sunken" type="time" step="300" [value]="time()" [disabled]="locked()" (change)="time.set($any($event.target).value)" />
+      </label>
+    </div>
+
+    <div class="field-line">
+      <span class="label">Canali</span>
+      @if (content(); as item) {
+        <p class="marks">
+          @for (channel of item.channels; track channel) {
+            <span class="mark"><mb-channel-mark [channel]="channel" [active]="true" [size]="16" /> {{ name(channel) }}</span>
+          }
+        </p>
+        <p class="caption">Sono quelli del contenuto: si cambiano dalla sua pagina.</p>
+      } @else {
+        <div class="chips">
+          @for (channel of plan().channels; track channel) {
+            <button class="chip" type="button" [class.selected]="channels().includes(channel)" [attr.aria-pressed]="channels().includes(channel)"
+              [disabled]="locked()" (click)="toggle(channel)">
+              {{ name(channel) }}
+            </button>
+          }
+        </div>
+      }
+    </div>
+
+    @if (!content()) {
+      @if (plan().themes.length > 0) {
+        <label class="field-line">
+          <span class="label">Tema</span>
+          <select class="sunken" [disabled]="locked()" (change)="themeId.set($any($event.target).value || null)">
+            <option value="" [selected]="!themeId()">Nessun tema in particolare</option>
+            @for (theme of plan().themes; track theme.id) {
+              <option [value]="theme.id" [selected]="themeId() === theme.id">{{ theme.name }}</option>
+            }
+          </select>
+        </label>
+      }
+      @if (current) {
+        <label class="field-line">
+          <span class="label">Idea</span>
+          <select class="sunken" [disabled]="locked()" (change)="ideaId.set($any($event.target).value || null)">
+            <option value="" [selected]="!ideaId()">Nessuna idea, per ora</option>
+            @for (idea of ideas(); track idea.id) {
+              <option [value]="idea.id" [selected]="ideaId() === idea.id">{{ idea.title }}</option>
+            }
+          </select>
+        </label>
+      }
+    }
+
+    @if (!valid() && !locked() && date() && time()) {
+      <p class="caption warn">Scegli un giorno e un’ora da adesso in poi{{ !content() && channels().length === 0 ? ', e almeno un canale' : '' }}.</p>
+    }
+  </div>
+
+  <footer class="sheet-foot">
+    @if (current && !locked()) {
+      <button class="link-btn danger" type="button" [disabled]="saving()" (click)="remove()">Togli dal piano</button>
+    }
+    <span class="grow"></span>
+    @if (current && !current.content && !locked()) {
+      <button class="btn btn-secondary btn-sm" type="button" [disabled]="saving() || busy()" (click)="prepare.emit(current)">
+        <mb-icon name="message-circle" [size]="15" /> Prepara in chat
+      </button>
+    }
+    @if (!locked()) {
+      <button class="btn btn-primary btn-sm" type="button" [disabled]="!valid() || saving()" (click)="save()">
+        {{ saving() ? 'Salvo…' : creating() ? 'Aggiungi al piano' : 'Salva' }}
+      </button>
+    }
+  </footer>
+</aside>

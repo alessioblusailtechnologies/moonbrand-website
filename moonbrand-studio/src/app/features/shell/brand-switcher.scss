@@ -1,0 +1,55 @@
+:host {
+  display: block;
+}
+
+// Sul blu della sidebar: una scheda appena più chiara, con logo, nome e tipo del brand.
+.trigger {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 8px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: var(--radius-md);
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--white);
+  text-align: left;
+  cursor: pointer;
+  transition: background-color 120ms var(--ease);
+
+  &:hover,
+  &[aria-expanded='true'] {
+    background: rgba(255, 255, 255, 0.07);
+  }
+
+  &.compact {
+    justify-content: center;
+    padding: 6px;
+  }
+}
+
+.trigger-text {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-width: 0;
+  line-height: 1.3;
+}
+
+.trigger-name {
+  overflow: hidden;
+  font-size: 14px;
+  font-weight: 600;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.trigger-kind {
+  color: var(--sidebar-muted);
+  font-size: 12px;
+}
+
+.chevron {
+  color: var(--sidebar-muted);
+}

@@ -1,0 +1,47 @@
+---
+import Logo from './Logo.astro';
+---
+
+<header>
+  <div class="bar">
+    <Logo />
+    <nav>
+      <a href="#piattaforma">Piattaforma</a>
+      <a href="#risultato">Perché Moonbrand</a>
+      <a href="#sistema">Funzionalità</a>
+      <a href="#prova">Prova gratis</a>
+    </nav>
+    <div class="actions">
+      <a href="#" class="login">Accedi</a>
+      <a href="#prova" class="btn btn-dark cta">Inizia ora</a>
+    </div>
+  </div>
+</header>
+
+<style>
+  header {
+    position: sticky;
+    top: 0;
+    z-index: 20;
+    background: rgba(255, 255, 255, 0.94);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--line);
+  }
+  .bar {
+    max-width: 1240px;
+    margin: 0 auto;
+    padding: 12px 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    flex-wrap: wrap;
+  }
+  nav { display: flex; gap: 26px; font-size: 14.5px; color: var(--text); flex-wrap: wrap; }
+  .actions { display: flex; gap: 8px; align-items: center; font-size: 14.5px; }
+  .login { padding: 8px 12px; }
+  .cta { padding: 9px 16px; border-radius: 8px; }
+  @media (max-width: 760px) {
+    nav { display: none; }
+  }
+</style>

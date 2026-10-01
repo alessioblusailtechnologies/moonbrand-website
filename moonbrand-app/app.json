@@ -1,0 +1,63 @@
+{
+  "expo": {
+    "name": "Moonbrand",
+    "slug": "moonbrand",
+    "scheme": "moonbrand",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "light",
+    "backgroundColor": "#fafaf8",
+    "android": {
+      "package": "it.moonbrand.app",
+      "versionCode": 1,
+      "adaptiveIcon": {
+        "backgroundColor": "#0b1324",
+        "foregroundImage": "./assets/android-icon-foreground.png",
+        "monochromeImage": "./assets/android-icon-monochrome.png"
+      },
+      "softwareKeyboardLayoutMode": "resize",
+      "predictiveBackGestureEnabled": false,
+      "permissions": [
+        "android.permission.INTERNET"
+      ]
+    },
+    "plugins": [
+      "expo-router",
+      [
+        "expo-splash-screen",
+        {
+          "backgroundColor": "#0b1324",
+          "image": "./assets/splash-icon.png",
+          "imageWidth": 160
+        }
+      ],
+      "expo-status-bar",
+      "expo-image",
+      "expo-video",
+      "@react-native-community/datetimepicker",
+      "expo-font",
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "Moonbrand usa le tue foto per allegarle ai messaggi dell'assistente.",
+          "cameraPermission": "Moonbrand usa la fotocamera per scattare foto da allegare ai messaggi dell'assistente."
+        }
+      ],
+      [
+        "expo-build-properties",
+        {
+          "android": {
+            "usesCleartextTraffic": true,
+            "useLegacyPackaging": true,
+            "enableMinifyInReleaseBuilds": true,
+            "enableShrinkResourcesInReleaseBuilds": true
+          }
+        }
+      ]
+    ],
+    "experiments": {
+      "typedRoutes": false
+    }
+  }
+}
